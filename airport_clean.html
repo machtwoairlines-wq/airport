@@ -1,0 +1,1359 @@
+<title>Airport</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
+<style>
+:root {
+  --bg: #f5f6fa;
+  --surface: #ffffff;
+  --surface2: #f0f2f8;
+  --border: #e2e6f0;
+  --border2: #d0d5e8;
+
+  --accent: #5b6ef5;
+  --accent-light: #eef0fe;
+  --accent-mid: #c7ccfc;
+  --grad: linear-gradient(135deg, #5b6ef5 0%, #8b5cf6 100%);
+
+  --fg: #1a1d2e;
+  --fg2: #4b5378;
+  --fg3: #8b91b0;
+
+  --col-mt: #2563eb;
+  --col-mt-bg: #eff5ff;
+  --col-mt-border: #bfcffd;
+
+  --col-mtp: #dc2626;
+  --col-mtp-bg: #fff1f1;
+  --col-mtp-border: #fbbfbf;
+
+  --col-lm: #d97706;
+  --col-lm-bg: #fffbeb;
+  --col-lm-border: #fcd99a;
+
+  --col-done: #059669;
+  --col-done-bg: #ecfdf5;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
+  --shadow: 0 4px 12px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1117; --surface: #181c2a; --surface2: #1e2235;
+    --border: #2a2f45; --border2: #353b55;
+    --fg: #e8eaf5; --fg2: #9da5c7; --fg3: #5a6080;
+    --col-mt-bg: #1a2340; --col-mtp-bg: #2a1515; --col-lm-bg: #261d08;
+    --accent-light: #1c2045; --shadow-sm: 0 1px 3px rgba(0,0,0,.3);
+    --shadow: 0 4px 12px rgba(0,0,0,.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1117; --surface: #181c2a; --surface2: #1e2235;
+  --border: #2a2f45; --border2: #353b55;
+  --fg: #e8eaf5; --fg2: #9da5c7; --fg3: #5a6080;
+  --col-mt-bg: #1a2340; --col-mtp-bg: #2a1515; --col-lm-bg: #261d08;
+  --accent-light: #1c2045; --shadow-sm: 0 1px 3px rgba(0,0,0,.3);
+  --shadow: 0 4px 12px rgba(0,0,0,.4);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* ─── LOGIN GATE ─── */
+#login-gate {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.login-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 48px 40px;
+  width: 100%; max-width: 420px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+.login-logo {
+  width: 72px; height: 72px;
+  margin: 0 auto 22px;
+}
+.login-logo img { width: 72px; height: 72px; display: block; }
+.login-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800; font-size: 24px;
+  letter-spacing: -.02em;
+  margin-bottom: 6px;
+  background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.login-sub {
+  font-size: 13px; color: var(--fg3); margin-bottom: 32px;
+}
+.login-label {
+  font-size: 11px; font-weight: 600; color: var(--fg2);
+  text-align: left; display: block; margin-bottom: 7px;
+  letter-spacing: .05em; text-transform: uppercase;
+}
+.login-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--fg);
+  outline: none;
+  transition: border-color .15s;
+  margin-bottom: 14px;
+}
+.login-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(91,110,245,.12); }
+.login-input::placeholder { color: var(--fg3); }
+.login-btn {
+  width: 100%;
+  background: var(--grad);
+  border: none; border-radius: 10px;
+  padding: 13px;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: opacity .15s;
+  margin-top: 4px;
+}
+.login-btn:hover { opacity: .88; }
+.login-link {
+  background: none; border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px; color: var(--accent);
+  cursor: pointer; margin-top: 16px; display: block;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.login-link:hover { opacity: .75; }
+
+/* CSS-only form toggle via :target */
+.auth-form { display: none; }
+#login { display: block; }
+#register:target { display: block; }
+#register:target ~ #login,
+:not(#register):target ~ #login { display: none; }
+#login:target { display: block; }
+/* When #register is targeted, hide login; when #login targeted, show it */
+body:has(#register:target) #login { display: none; }
+body:has(#register:target) #register { display: block; }
+body:has(#login:target) #login { display: block; }
+body:has(#login:target) #register { display: none; }
+.login-err {
+  font-size: 12px; color: var(--col-mtp);
+  margin-top: 10px; min-height: 18px;
+}
+.login-ok {
+  font-size: 12px; color: var(--col-done); text-align:left; line-height:1.6;
+  margin-top: 10px; min-height: 18px;
+}
+
+/* ─── HEADER ─── */
+.header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 0 28px;
+}
+.hdr-inner {
+  max-width: 1120px; margin: 0 auto;
+  display: flex; align-items: center;
+  height: 58px; gap: 20px;
+}
+.logo-wrap { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.logo-mark {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.logo-mark svg { width: 16px; height: 16px; }
+.logo-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800; font-size: 17px;
+  color: var(--fg); letter-spacing: -.01em;
+}
+.logo-text span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.hdr-divider { width: 1px; height: 24px; background: var(--border2); flex-shrink: 0; }
+
+.hdr-stats { display: flex; gap: 20px; }
+.hdr-stat { display: flex; align-items: baseline; gap: 5px; }
+.hdr-val { font-weight: 700; font-size: 15px; color: var(--fg); }
+.hdr-val.green { color: var(--col-done); }
+.hdr-lbl { font-size: 11px; color: var(--fg3); }
+
+.hdr-user {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 10px;
+}
+.user-pill {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 4px 12px 4px 4px;
+  font-size: 12px; color: var(--fg2);
+}
+.user-avatar {
+  width: 24px; height: 24px;
+  background: var(--grad);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.logout-btn {
+  background: none; border: none;
+  font-size: 11px; color: var(--fg3);
+  cursor: pointer; padding: 2px 4px;
+  border-radius: 4px;
+  transition: color .12s;
+}
+.logout-btn:hover { color: var(--col-mtp); }
+
+.tabs { display: flex; gap: 2px; }
+.tab {
+  font-size: 13px; font-weight: 500;
+  padding: 6px 16px;
+  border-radius: 6px; border: none;
+  background: transparent; color: var(--fg2);
+  cursor: pointer; transition: all .15s;
+}
+.tab:hover { background: var(--surface2); color: var(--fg); }
+.tab.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+
+/* ─── LEGEND ─── */
+.legend-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 28px; }
+.legend-inner {
+  max-width: 1120px; margin: 0 auto;
+  display: flex; gap: 20px; align-items: center; height: 36px; flex-wrap: wrap;
+}
+.legend-label { font-size: 11px; font-weight: 500; color: var(--fg3); margin-right: 4px; }
+.leg { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 500; color: var(--fg2); }
+.leg-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+/* ─── MAIN ─── */
+.main { max-width: 1120px; margin: 0 auto; padding: 28px 28px 72px; }
+.view { display: none; }
+.view.active { display: block; }
+
+/* ─── STAT CARDS ─── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px; margin-bottom: 28px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.stat-num {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800; font-size: 40px;
+  color: var(--fg); line-height: 1;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+}
+.stat-num.accent { color: var(--accent); }
+.stat-num.green { color: var(--col-done); }
+.stat-num.red { color: var(--col-mtp); }
+.stat-lbl { font-size: 12px; color: var(--fg3); margin-top: 5px; font-weight: 500; }
+.prog-bar { height: 4px; background: var(--surface2); border-radius: 2px; margin-top: 14px; overflow: hidden; }
+.prog-fill { height: 100%; background: var(--grad); border-radius: 2px; transition: width .5s ease; }
+
+/* ─── SECTOR GRID ─── */
+.section-title {
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .07em;
+  color: var(--fg3); margin: 24px 0 12px;
+}
+.sector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px; margin-bottom: 28px;
+}
+.sector-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 18px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.sector-name { font-size: 12.5px; font-weight: 600; color: var(--fg); flex: 1; min-width: 0; }
+.sector-pct-wrap { flex-shrink: 0; text-align: right; }
+.sector-pct { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px; color: var(--accent); line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.sector-ct { font-size: 10.5px; color: var(--fg3); margin-top: 1px; }
+.sector-bar { height: 3px; background: var(--surface2); border-radius: 2px; overflow: hidden; margin-top: 8px; }
+.sector-fill { height: 100%; background: var(--grad); border-radius: 2px; }
+
+/* ─── CALENDAR MONTH GRID ─── */
+/* ─── CALENDAR — SLACK STYLE ─── */
+.cal-layout {
+  display: grid;
+  grid-template-columns: 268px 1fr;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  min-height: 520px;
+}
+@media (max-width: 820px) { .cal-layout { grid-template-columns: 1fr; } }
+
+.cal-mini-panel {
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  padding: 20px 16px;
+  display: flex; flex-direction: column;
+}
+.cal-month-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.cal-month-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700; font-size: 14px; color: var(--fg); letter-spacing: -.01em;
+}
+.cal-nav-btn {
+  width: 26px; height: 26px;
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 12px; color: var(--fg3); transition: all .12s;
+}
+.cal-nav-btn:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent-mid); }
+.cal-dow-row {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px;
+}
+.cal-dow {
+  text-align: center; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .05em; color: var(--fg3); padding: 2px 0;
+}
+.cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal-day {
+  height: 30px; border-radius: 7px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .1s; gap: 2px;
+}
+.cal-day:hover { background: var(--surface2); }
+.cal-day.other-month { opacity: .25; pointer-events: none; }
+.cal-day.today { background: var(--accent-light); }
+.cal-day.today .cal-day-num { color: var(--accent); font-weight: 700; }
+.cal-day.selected { background: var(--grad); }
+.cal-day.selected .cal-day-num { color: #fff; font-weight: 700; }
+.cal-day-num { font-size: 12px; font-weight: 500; color: var(--fg); line-height: 1; }
+.cal-dots { display: flex; gap: 2px; justify-content: center; }
+.cal-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+.cal-day.selected .cal-dot { opacity: .8; }
+
+.cal-agenda { display: flex; flex-direction: column; overflow: hidden; }
+.cal-agenda-head {
+  padding: 18px 24px 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: baseline; gap: 10px; flex-shrink: 0;
+}
+.cal-agenda-date {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800; font-size: 22px; color: var(--fg); letter-spacing: -.02em;
+}
+.cal-agenda-dow { font-size: 12px; color: var(--fg3); }
+.cal-agenda-body { flex: 1; overflow-y: auto; padding: 4px 0 16px; }
+
+.cal-date-divider {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 24px 6px;
+}
+.cal-date-divider-line { flex: 1; height: 1px; background: var(--border); }
+.cal-date-divider-label {
+  font-size: 11px; font-weight: 700; color: var(--fg3);
+  letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+}
+.cal-ev-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 7px 24px; transition: background .08s;
+}
+.cal-ev-item:hover { background: var(--surface2); }
+.cal-ev-icon {
+  width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+}
+.cal-ev-body { flex: 1; min-width: 0; }
+.cal-ev-title { font-size: 13.5px; font-weight: 600; color: var(--fg); line-height: 1.3; }
+.cal-ev-sub { font-size: 12px; color: var(--fg3); margin-top: 1px; }
+.cal-ev-tag {
+  display: inline-flex; align-items: center; font-size: 10px; font-weight: 600;
+  padding: 1px 6px; border-radius: 4px; margin-top: 4px;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+.cal-ev-tag.mt { background: var(--col-mt-bg); color: var(--col-mt); border: 1px solid var(--col-mt-border); }
+.cal-ev-tag.mtp { background: var(--col-mtp-bg); color: var(--col-mtp); border: 1px solid var(--col-mtp-border); }
+.cal-ev-tag.lm { background: var(--col-lm-bg); color: var(--col-lm); border: 1px solid var(--col-lm-border); }
+.cal-ev-tag.urgent { background: #fee2e2; color: #dc2626; border: 1px solid #fbbfbf; }
+.cal-ev-tag.done { background: var(--col-done-bg); color: var(--col-done); }
+
+.cal-no-event {
+  padding: 40px 24px;
+  text-align: center; color: var(--fg3); font-size: 13px;
+}
+
+/* ─── TASKS ─── */
+.tasks-stack { display: flex; flex-direction: column; gap: 10px; }
+.tsect {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.tsect-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 20px;
+  cursor: pointer; user-select: none;
+  transition: background .12s;
+  border-bottom: 1px solid var(--border);
+}
+.tsect-head:hover { background: var(--surface2); }
+.tsect-name { font-size: 13px; font-weight: 600; color: var(--fg); flex: 1; }
+.tsect-count {
+  font-size: 11.5px; font-weight: 600; color: var(--fg3);
+  background: var(--surface2); padding: 2px 8px; border-radius: 99px;
+}
+.tsect-chev { color: var(--fg3); font-size: 10px; transition: transform .2s; }
+.tsect.collapsed .tsect-chev { transform: rotate(-90deg); }
+.tsect.collapsed .tsect-body { display: none; }
+
+.task-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background .1s, opacity .2s;
+  position: relative;
+}
+.task-item:last-child { border-bottom: none; }
+.task-item::before {
+  content: ''; position: absolute;
+  left: 0; top: 0; bottom: 0; width: 3px;
+}
+.task-item.ent-mt::before { background: var(--col-mt); }
+.task-item.ent-mtp::before { background: var(--col-mtp); }
+.task-item.ent-lm::before { background: var(--col-lm); }
+.task-item:hover { background: var(--surface2); }
+.task-item.done {
+  opacity: .55;
+}
+.task-item.done .task-text { text-decoration: line-through; color: var(--fg3); }
+
+.task-cb {
+  flex-shrink: 0; width: 16px; height: 16px;
+  border: 1.5px solid var(--border2);
+  border-radius: 4px; background: transparent;
+  cursor: pointer; appearance: none; -webkit-appearance: none;
+  margin-top: 2px; position: relative; transition: all .12s;
+}
+.task-cb:checked { background: var(--col-done); border-color: var(--col-done); }
+.task-cb:checked::after {
+  content: ''; position: absolute;
+  left: 3px; top: 0px; width: 5px; height: 9px;
+  border: 1.5px solid #fff;
+  border-top: none; border-left: none;
+  transform: rotate(45deg);
+}
+
+.task-text { flex: 1; font-size: 13px; color: var(--fg); min-width: 0; line-height: 1.45; }
+
+.ent-badge {
+  flex-shrink: 0; font-size: 10px; font-weight: 700;
+  border-radius: 4px; padding: 2px 6px;
+  align-self: flex-start; margin-top: 1px; letter-spacing: .03em;
+}
+.task-item.ent-mt .ent-badge { background: var(--col-mt-bg); color: var(--col-mt); border: 1px solid var(--col-mt-border); }
+.task-item.ent-mtp .ent-badge { background: var(--col-mtp-bg); color: var(--col-mtp); border: 1px solid var(--col-mtp-border); }
+.task-item.ent-lm .ent-badge { background: var(--col-lm-bg); color: var(--col-lm); border: 1px solid var(--col-lm-border); }
+
+.tag-urgent {
+  flex-shrink: 0; font-size: 10px; font-weight: 700;
+  background: #fee2e2; color: #dc2626;
+  border: 1px solid #fbbfbf; border-radius: 4px;
+  padding: 2px 6px; align-self: flex-start; margin-top: 1px;
+}
+
+.done-sep {
+  padding: 6px 20px 4px;
+  font-size: 10.5px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--fg3);
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+}
+
+.add-row {
+  display: flex; gap: 6px;
+  padding: 10px 20px 12px;
+  background: var(--surface2); flex-wrap: wrap;
+}
+.add-ent-sel {
+  flex-shrink: 0;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 6px; color: var(--fg);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px; font-weight: 600;
+  padding: 6px 10px; cursor: pointer; outline: none;
+}
+.add-input {
+  flex: 1; min-width: 120px;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 6px; padding: 7px 12px;
+  color: var(--fg); font-family: 'Inter', sans-serif;
+  font-size: 12.5px; outline: none; transition: border-color .12s;
+}
+.add-input::placeholder { color: var(--fg3); }
+.add-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(91,110,245,.1); }
+.add-btn {
+  flex-shrink: 0; background: var(--accent); border: none;
+  border-radius: 6px; padding: 7px 14px; color: #fff;
+  font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: opacity .12s;
+}
+.add-btn:hover { opacity: .85; }
+
+@media (max-width: 640px) {
+  .header { padding: 0 16px; }
+  .hdr-stats { display: none; }
+  .tabs { gap: 2px; }
+  .tab { padding: 5px 10px; font-size: 12px; }
+  .main { padding: 16px 16px 60px; }
+  .legend-bar { padding: 0 16px; }
+  .hdr-user { display: none; }
+}
+</style>
+
+<!-- DEBUG BAR -->
+<div id="js-error-bar" style="display:none;position:fixed;top:0;left:0;right:0;background:#ff4444;color:#fff;padding:10px 16px;font-size:13px;font-family:monospace;z-index:9999;"></div>
+
+<!-- LOGIN GATE -->
+<div id="login-gate">
+  <div class="login-box">
+    <div class="login-logo">
+      <img src="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 72 72%22%3E%3Ccircle cx%3D%2236%22 cy%3D%2236%22 r%3D%2236%22 fill%3D%22%235b6ef5%22/%3E%3Ctext x%3D%2236%22 y%3D%2244%22 text-anchor%3D%22middle%22 fill%3D%22white%22 font-size%3D%2226%22 font-family%3D%22sans-serif%22 font-weight%3D%22bold%22%3EM2%3C/text%3E%3C/svg%3E" alt="Airport" style="width:72px;height:72px;border-radius:50%;">
+    </div>
+    <div class="login-title">AIRPORT</div>
+    <div class="login-sub" id="login-sub-text">Connectez-vous pour accéder au dashboard</div>
+
+    <!-- LOGIN FORM -->
+    <div id="login" class="auth-form">
+      <label class="login-label" for="login-email">Adresse email</label>
+      <input class="login-input" type="email" id="login-email" placeholder="vous@machtwomusicgroup.com" autocomplete="email">
+      <label class="login-label" for="login-pass">Mot de passe</label>
+      <input class="login-input" type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+      <button type="button" class="login-btn" id="login-btn">Se connecter</button>
+      <a href="#register" class="login-link" id="go-register">Pas encore de compte ? Créer un accès</a>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="register" class="auth-form">
+      <label class="login-label" for="reg-email">Adresse email</label>
+      <input class="login-input" type="email" id="reg-email" name="username" placeholder="vous@machtwomusicgroup.com" autocomplete="email">
+      <label class="login-label" for="reg-team-key">Clef d'équipe</label>
+      <input class="login-input" type="password" id="reg-team-key" placeholder="Fournie par l'admin" autocomplete="off">
+      <label class="login-label" for="reg-pass">Choisir un mot de passe</label>
+      <div style="position:relative;margin-bottom:14px;">
+        <input class="login-input" type="password" id="reg-pass" name="password" placeholder="8 caractères minimum" autocomplete="new-password" style="margin-bottom:0;padding-right:44px;width:100%;">
+        <button type="button" id="eye-reg-pass" title="Voir" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--fg3);padding:0;display:flex;align-items:center;">
+          <svg id="eye-reg-pass-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <label class="login-label" for="reg-pass2">Confirmer le mot de passe</label>
+      <div style="position:relative;margin-bottom:14px;">
+        <input class="login-input" type="password" id="reg-pass2" placeholder="••••••••" autocomplete="new-password" style="margin-bottom:0;padding-right:44px;width:100%;">
+        <button type="button" id="eye-reg-pass2" title="Voir" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--fg3);padding:0;display:flex;align-items:center;">
+          <svg id="eye-reg-pass2-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <button type="button" class="login-btn" id="reg-btn">Créer mon accès</button>
+      <a href="#login" class="login-link" id="go-login">Déjà un compte ? Se connecter</a>
+    </div>
+
+    <div class="login-err" id="login-err"></div>
+    <div class="login-ok" id="login-ok"></div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="hdr-inner">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 72 72%22%3E%3Ccircle cx%3D%2236%22 cy%3D%2236%22 r%3D%2236%22 fill%3D%22%235b6ef5%22/%3E%3Ctext x%3D%2236%22 y%3D%2244%22 text-anchor%3D%22middle%22 fill%3D%22white%22 font-size%3D%2226%22 font-family%3D%22sans-serif%22 font-weight%3D%22bold%22%3EM2%3C/text%3E%3C/svg%3E" alt="Airport" style="width:28px;height:28px;border-radius:50%;display:block;">
+      </div>
+      <div class="logo-text"><span>AIRPORT</span></div>
+    </div>
+    <div class="hdr-divider"></div>
+    <div class="hdr-stats">
+      <div class="hdr-stat">
+        <span class="hdr-val" id="hd-total">—</span>
+        <span class="hdr-lbl">tâches</span>
+      </div>
+      <div class="hdr-stat">
+        <span class="hdr-val green" id="hd-done">—</span>
+        <span class="hdr-lbl">complétées</span>
+      </div>
+      <div class="hdr-stat">
+        <span class="hdr-val" id="hd-pct">—</span>
+        <span class="hdr-lbl">progression</span>
+      </div>
+    </div>
+    <div class="hdr-user">
+      <div class="user-pill">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <span id="user-label" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      </div>
+      <button class="logout-btn" id="admin-key-btn" style="margin-right:8px;display:none" title="Changer la clef d'équipe">🔑</button>
+      <button class="logout-btn" id="logout-btn">Quitter</button>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" data-view="overview">Vue d'ensemble</button>
+      <button class="tab" data-view="calendar">Calendrier</button>
+      <button class="tab" data-view="tasks">Tâches</button>
+    </nav>
+  </div>
+</header>
+
+<div class="legend-bar">
+  <div class="legend-inner">
+    <span class="legend-label">Entité :</span>
+    <div class="leg"><div class="leg-dot" style="background:var(--col-mt)"></div>MT — Mach Two (groupe)</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--col-mtp)"></div>MTP — Mach Two Publishing</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--col-lm)"></div>LM / FJ — La Madone · Freaky Joe</div>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- OVERVIEW -->
+  <div class="view active" id="view-overview">
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-num" id="ov-total">—</div>
+        <div class="stat-lbl">Tâches totales</div>
+        <div class="prog-bar"><div class="prog-fill" id="ov-prog" style="width:0%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num green" id="ov-done">—</div>
+        <div class="stat-lbl">Complétées</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num red" id="ov-left">—</div>
+        <div class="stat-lbl">Restantes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num accent" id="ov-pct" style="font-size:28px;">—</div>
+        <div class="stat-lbl">Progression globale</div>
+      </div>
+    </div>
+    <div class="section-title">Avancement par section</div>
+    <div class="sector-grid" id="sector-grid"></div>
+    <div class="section-title">Échéances clés</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm)">
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div style="display:flex;align-items:center;gap:16px;padding:16px 20px;border-bottom:1px solid var(--border)">
+          <div style="width:46px;height:46px;background:linear-gradient(135deg,#ef4444,#dc2626);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;color:#fff">
+            <span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:18px;line-height:1">19</span>
+            <span style="font-size:8px;font-weight:600;letter-spacing:.05em">OCT</span>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--fg)">Fly Me to the Moon</div>
+            <div style="font-size:12px;color:var(--fg3);margin-top:2px">Sortie single — Date confirmée</div>
+          </div>
+          <span style="margin-left:auto;font-size:10px;font-weight:700;background:#fee2e2;color:#dc2626;border:1px solid #fbbfbf;border-radius:4px;padding:3px 9px">Sortie imminente</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;padding:16px 20px;border-bottom:1px solid var(--border)">
+          <div style="width:46px;height:46px;background:var(--grad);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;color:#fff">
+            <span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:13px;line-height:1">×30</span>
+            <span style="font-size:7px;font-weight:600;letter-spacing:.04em;margin-top:2px">JOURS</span>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--fg)">Série sessions écoute</div>
+            <div style="font-size:12px;color:var(--fg3);margin-top:2px">1 vidéo / soir — Insta + TikTok · 19 Oct → 17 Nov</div>
+          </div>
+          <span style="margin-left:auto;font-size:10px;font-weight:700;background:var(--col-mt-bg);color:var(--col-mt);border:1px solid var(--col-mt-border);border-radius:4px;padding:3px 9px">MT</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;padding:16px 20px">
+          <div style="width:46px;height:46px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+            <span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:16px;line-height:1;color:var(--fg)">12</span>
+            <span style="font-size:8px;font-weight:600;letter-spacing:.05em;color:var(--fg3)">DÉC</span>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--fg)">Remember</div>
+            <div style="font-size:12px;color:var(--fg3);margin-top:2px">Single suivant — Sortie prévue</div>
+          </div>
+          <span style="margin-left:auto;font-size:10px;font-weight:700;background:var(--col-mt-bg);color:var(--col-mt);border:1px solid var(--col-mt-border);border-radius:4px;padding:3px 9px">Planifié</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="view" id="view-calendar">
+    <div class="cal-layout">
+      <!-- left: mini month -->
+      <div class="cal-mini-panel">
+        <div class="cal-month-head">
+          <button class="cal-nav-btn" id="cal-prev">&#8592;</button>
+          <div class="cal-month-label" id="cal-month-label"></div>
+          <button class="cal-nav-btn" id="cal-next">&#8594;</button>
+        </div>
+        <div class="cal-dow-row">
+          <div class="cal-dow">Lu</div><div class="cal-dow">Ma</div><div class="cal-dow">Me</div>
+          <div class="cal-dow">Je</div><div class="cal-dow">Ve</div><div class="cal-dow">Sa</div><div class="cal-dow">Di</div>
+        </div>
+        <div class="cal-days" id="cal-days"></div>
+      </div>
+      <!-- right: agenda -->
+      <div class="cal-agenda">
+        <div class="cal-agenda-head">
+          <div class="cal-agenda-date" id="cal-sel-date">Agenda</div>
+          <div class="cal-agenda-dow" id="cal-sel-dow">Cliquez une date</div>
+        </div>
+        <div class="cal-agenda-body" id="cal-events-list">
+          <div class="cal-no-event">Sélectionnez une date</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASKS -->
+  <div class="view" id="view-tasks">
+    <div class="tasks-stack" id="sections-container"></div>
+  </div>
+
+</main>
+
+<script>
+/* ─── DATA ─── */
+const SECTIONS = [
+  { id:'urgent', name:'Priorité immédiate', tasks:[
+    { id:'u1', text:'Replanifier RDV avec Thomas (Sony) — lui dire qu\'on a loupé un RDV', ent:'mt', urgent:true },
+    { id:'u2', text:'Recontacter Aurore', ent:'mt', urgent:true },
+    { id:'u3', text:'Préparer note vocale en anglais pour Aurore', ent:'mt', urgent:true },
+    { id:'u4', text:'RDV ce samedi matin avec Soledad', ent:'mtp', urgent:true },
+    { id:'u5', text:'Recadrer pochette FMTTM en 3000×3000px (Photoshop)', ent:'mt', urgent:true },
+    { id:'u6', text:'Valider mastering Fly Me to the Moon — deadline J-21 avant sortie', ent:'mt', urgent:true },
+    { id:'u7', text:'Uploader FMTTM sur DistroKid / iMusician', ent:'mt', urgent:true },
+    { id:'u8', text:'Pitcher FMTTM aux playlists Spotify (fenêtre J-7)', ent:'mt', urgent:true },
+  ]},
+  { id:'fmttm', name:'Fly Me to the Moon — Sortie 19 Oct', tasks:[
+    { id:'f1', text:'Finaliser mix FMTTM', ent:'mt' },
+    { id:'f2', text:'Mastering FMTTM — livraison WAV 24bit 44.1kHz', ent:'mt' },
+    { id:'f3', text:'Valider pochette 3000x3000px', ent:'mt' },
+    { id:'f4', text:'Renseigner métadonnées (titre exact, ISRC, BPM, genre)', ent:'mt' },
+    { id:'f5', text:'Rédiger post Instagram annonce FMTTM + visuels', ent:'mt' },
+    { id:'f6', text:'Refaire le lien Linktree pour ceux qui scanneront le QR code', ent:'mt' },
+    { id:'f7', text:'Faire des retours à Mat pour ajuster la colorimétrie', ent:'mt' },
+    { id:'f8', text:'Teaser TikTok J-3 (extrait 15s + visuel)', ent:'mt' },
+    { id:'f9', text:'Publication sur Publer (programmer les posts)', ent:'mt' },
+    { id:'f10', text:'Compiler checklist pre-sortie (discussion ChatGPT)', ent:'mt' },
+    { id:'f11', text:'Envoyer FMTTM à Apple Music Connect', ent:'mt' },
+  ]},
+  { id:'serie30', name:'Série 30 jours — Sessions écoute (19 Oct — 17 Nov)', tasks:[
+    { id:'s1', text:'Définir le concept visuel des 30 vidéos (ambiance, format, cadre)', ent:'mt' },
+    { id:'s2', text:'Filmer un lot de 7-10 sessions écoute à l\'avance', ent:'mt' },
+    { id:'s3', text:'Monter le template vidéo (20-30s, sous-titres, logo)', ent:'mt' },
+    { id:'s4', text:'Programmer les 30 publications sur Publer (Insta + TikTok simultané)', ent:'mt' },
+    { id:'s5', text:'Varier les lieux et ambiances (studio, extérieur, voyage…)', ent:'mt' },
+    { id:'s6', text:'Suivre les stats chaque soir (vues, comptes complétés, partages)', ent:'mt' },
+    { id:'s7', text:'Ajuster le contenu selon les retours à partir de J+7', ent:'mt' },
+    { id:'s8', text:'Préparer la vidéo J+30 — recap de la série', ent:'mt' },
+  ]},
+  { id:'admin', name:'Admin & Publishing', tasks:[
+    { id:'a1', text:'Choix d\'un drive : Proton Drive pour MTP', ent:'mtp' },
+    { id:'a2', text:'Faire le virement à Soledad', ent:'mtp' },
+    { id:'a3', text:'Faire l\'écoute de prod pour sélectionner nos compos', ent:'mtp' },
+    { id:'a4', text:'Déclarer Crash Test à la SACEM', ent:'mtp', urgent:true },
+    { id:'a5', text:'Déclarer Fly Me to the Moon à la SACEM', ent:'mtp', urgent:true },
+    { id:'a6', text:'Déclarer Remember à la SACEM', ent:'mtp' },
+    { id:'a7', text:'RDV avec juriste — structure édition musicale', ent:'mtp' },
+    { id:'a8', text:'Clarifier statut SACEM compositeur + arrangeur', ent:'mtp' },
+    { id:'a9', text:'Ouvrir compte bancaire pro Mach Two', ent:'mtp' },
+    { id:'a10', text:'Définir contrat de collaboration interne (répartition revenus)', ent:'mtp' },
+    { id:'a11', text:'Vérifier droits voisins ADAMI / SPEDIDAM', ent:'mtp' },
+  ]},
+  { id:'distrib', name:'Distribution & Playlists', tasks:[
+    { id:'d1', text:'Créer compte DistroKid (ou valider iMusician)', ent:'mt' },
+    { id:'d2', text:'Uploader Crash Test sur la plateforme', ent:'mt' },
+    { id:'d3', text:'Activer Spotify for Artists', ent:'mt' },
+    { id:'d4', text:'Mettre à jour bio + photos bannière Spotify', ent:'mt' },
+    { id:'d5', text:'Pitcher FMTTM aux playlisters Groover (curators FR)', ent:'mt' },
+    { id:'d6', text:'Contacter finchbergling (Discovery playlist)', ent:'mt' },
+    { id:'d7', text:'Soumettre FMTTM à SubmitHub', ent:'mt' },
+    { id:'d8', text:'Uploader catalogue sur YouTube (audio officiel)', ent:'mt' },
+    { id:'d9', text:'Clarifier résultat discussions Sony — All on That Day', ent:'mt' },
+  ]},
+  { id:'comms', name:'Communication & Réseaux', tasks:[
+    { id:'c1', text:'Ouvrir compte TikTok Mach Two officiel', ent:'mt' },
+    { id:'c2', text:'Configurer profil TikTok (bio, lien, photo)', ent:'mt' },
+    { id:'c3', text:'Contacter Pierredelahouse (477k)', ent:'mt' },
+    { id:'c4', text:'Contacter baptdisques (63k)', ent:'mt' },
+    { id:'c5', text:'Contacter instamino (161k)', ent:'mt' },
+    { id:'c6', text:'Contacter ayybaybay_radio (555k US)', ent:'mt' },
+    { id:'c7', text:'Contacter fuegostine (470k US)', ent:'mt' },
+    { id:'c8', text:'Contacter crocopine (168k US)', ent:'mt' },
+    { id:'c9', text:'Envoyer FMTTM à Tsugi, Trax, Radio FG', ent:'mt' },
+    { id:'c10', text:'Rédiger communiqué de presse FMTTM (FR + EN)', ent:'mt' },
+    { id:'c11', text:'Créer newsletter Mach Two (Mailchimp ou Brevo)', ent:'mt' },
+    { id:'c12', text:'Créer EPK (Electronic Press Kit) — PDF ou lien web', ent:'mt' },
+  ]},
+  { id:'placements', name:'Placements La Madone / Freaky Joe', tasks:[
+    { id:'p1', text:'Trouver ingés son spécialisés rap FR pour placements', ent:'lm' },
+    { id:'p2', text:'Récupérer stems Crash Test pour remixes / sync', ent:'lm' },
+    { id:'p3', text:'Préparer dossier sync — pub ou film', ent:'lm' },
+    { id:'p4', text:'Identifier labels / superviseurs sync FR + EU', ent:'lm' },
+    { id:'p5', text:'Envoyer démos La Madone à labels rap FR', ent:'lm' },
+  ]},
+  { id:'presence', name:'Présence & Identité Plateformes', tasks:[
+    { id:'pr1', text:'Premier post carrousel — choisir les photos (logo / nous deux / photo de profil Spotify / bandeau)', ent:'mt' },
+    { id:'pr2', text:'Premier post carrousel — rédiger la description / légendes', ent:'mt' },
+    { id:'pr3', text:'Changer photo de profil sur Spotify', ent:'mt' },
+    { id:'pr4', text:'Changer photo de profil sur Apple Music', ent:'mt' },
+    { id:'pr5', text:'Changer photo de profil sur Deezer, Tidal et autres plateformes', ent:'mt' },
+    { id:'pr6', text:'Ajouter / mettre à jour la description artiste sur toutes les plateformes', ent:'mt' },
+  ]},
+  { id:'live', name:'Live & Développement', tasks:[
+    { id:'l1', text:'Définir le set live Mach Two (durée, tracklist)', ent:'mt' },
+    { id:'l2', text:'Tester les stems en live sur Ableton', ent:'mt' },
+    { id:'l3', text:'Identifier scènes et salles cibles 2027 (Paris + régions)', ent:'mt' },
+    { id:'l4', text:'Réfléchir à la scénographie (visuels projetés, concept spatial)', ent:'mt' },
+    { id:'l5', text:'Contacter des bookers après 3 singles sortis', ent:'mt' },
+  ]},
+];
+
+/* ─── CALENDAR EVENTS ─── */
+// Format: 'YYYY-MM-DD': [{title, sub, ent, tag, range?}]
+const CAL_EVENTS = {};
+function addEv(dateStr, ev) {
+  if (!CAL_EVENTS[dateStr]) CAL_EVENTS[dateStr] = [];
+  CAL_EVENTS[dateStr].push(ev);
+}
+// Single dates
+addEv('2026-10-08', { title:'Aujourd\'hui — J-11', sub:'Dashboard activé', ent:'mt', tag:'Aujourd\'hui' });
+addEv('2026-10-16', { title:'Teaser TikTok J-3', sub:'Extrait 15s + visuel FMTTM', ent:'mt', tag:'Contenu' });
+addEv('2026-10-19', { title:'Fly Me to the Moon', sub:'Sortie single officielle', ent:'mt', tag:'Sortie' });
+addEv('2026-10-19', { title:'Début série 30 jours', sub:'Session écoute J+1 · Insta + TikTok', ent:'mt', tag:'Série' });
+addEv('2026-11-17', { title:'Fin série 30 jours', sub:'Dernière session + recap J+30', ent:'mt', tag:'Série' });
+addEv('2026-12-12', { title:'Remember', sub:'Single suivant — sortie prévue', ent:'mt', tag:'Sortie' });
+addEv('2027-02-01', { title:'Run', sub:'Single Q1 2027', ent:'mt', tag:'Sortie' });
+addEv('2026-09-12', { title:'Crash Test', sub:'Premier single — sorti', ent:'mt', tag:'Sorti' });
+// Série 30 jours: mark every day Oct 19 → Nov 17
+(function(){
+  for (let d = new Date('2026-10-19'); d <= new Date('2026-11-17'); d.setDate(d.getDate()+1)) {
+    const k = d.toISOString().slice(0,10);
+    if (!CAL_EVENTS[k]) CAL_EVENTS[k] = [];
+    const existing = CAL_EVENTS[k].find(e => e.tag === 'Série');
+    if (!existing) addEv(k, { title:'Session écoute', sub:'Insta + TikTok 20-30s', ent:'mt', tag:'Série' });
+  }
+})();
+// SACEM urgents
+addEv('2026-10-15', { title:'Déclaration SACEM', sub:'Crash Test + FMTTM avant sortie', ent:'mtp', tag:'Admin' });
+
+/* ─── STATE ─── */
+const STORAGE_KEY = 'machtwo_v5';
+const USER_KEY = 'machtwo_user_v1';
+const ENT_LABELS = { mt:'MT', mtp:'MTP', lm:'LM/FJ' };
+const ENT_COL = { mt:'var(--col-mt)', mtp:'var(--col-mtp)', lm:'var(--col-lm)' };
+
+function loadState() {
+  try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : { checked:{}, custom:{} }; }
+  catch(e) { return { checked:{}, custom:{} }; }
+}
+function saveState(s) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch(e) {} }
+let state = loadState();
+
+/* ─── AUTH ─── */
+const ADMIN_EMAIL = 'lamadone.mp3@pm.me';
+const ACCOUNTS_KEY = 'machtwo_accounts_v1';
+
+/* ─── TEAM KEY ─── */
+const TEAM_KEY_STORAGE = 'machtwo_team_key_v1';
+const TEAM_KEY_DEFAULT = 'mactwhoverslesetoiles';
+function getTeamKey() {
+  try { return localStorage.getItem(TEAM_KEY_STORAGE) || TEAM_KEY_DEFAULT; } catch(e) { return TEAM_KEY_DEFAULT; }
+}
+function setTeamKey(k) {
+  try { localStorage.setItem(TEAM_KEY_STORAGE, k); } catch(e) {}
+}
+
+function loadAccounts() {
+  try { const r = localStorage.getItem(ACCOUNTS_KEY); return r ? JSON.parse(r) : {}; }
+  catch(e) { return {}; }
+}
+function saveAccounts(a) { try { localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(a)); } catch(e) {} }
+
+// Simple hash (not cryptographic — no server = no real security; keeps passwords off plaintext)
+async function hashPass(pass) {
+  try {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass + 'machtwo_salt_v1'));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  } catch(e) { return btoa(pass + 'machtwo_salt_v1'); }
+}
+
+function loadSession() {
+  try { return localStorage.getItem(USER_KEY) || ''; } catch(e) { return ''; }
+}
+function saveSession(email) { try { localStorage.setItem(USER_KEY, email); } catch(e) {} }
+function clearSession() { try { localStorage.removeItem(USER_KEY); } catch(e) {} }
+
+const ADMIN_EMAIL = 'lamadone.mp3@pm.me';
+function showUser(email) {
+  const name = email.split('@')[0];
+  const initials = name.slice(0,2).toUpperCase();
+  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('user-label').textContent = email;
+  // Show admin key button only for admin
+  const adminBtn = document.getElementById('admin-key-btn');
+  if (adminBtn) adminBtn.style.display = (email === ADMIN_EMAIL) ? '' : 'none';
+}
+
+
+function setErr(msg) {
+  document.getElementById('login-err').textContent = msg;
+  document.getElementById('login-ok').innerHTML = '';
+}
+function setOk(msg, html) {
+  const el = document.getElementById('login-ok');
+  if (html) { el.innerHTML = html; } else { el.textContent = msg; }
+  document.getElementById('login-err').textContent = '';
+}
+
+function showForm(mode) {
+  document.getElementById('login-sub-text').textContent = mode === 'login'
+    ? 'Connectez-vous pour accéder au dashboard'
+    : 'Créez votre accès';
+  document.getElementById('login-err').textContent = '';
+  document.getElementById('login-ok').innerHTML = '';
+}
+
+function initAuth() {
+  const gate = document.getElementById('login-gate');
+
+  // Always attach listeners (even if session exists, needed after logout)
+  document.getElementById('go-register').addEventListener('click', () => showForm('register'));
+  document.getElementById('go-login').addEventListener('click', () => showForm('login'));
+
+  // EYE TOGGLE — show/hide password
+  function toggleEye(inputId, iconId) {
+    const inp = document.getElementById(inputId);
+    const ico = document.getElementById(iconId);
+    if (!inp) return;
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      if (ico) ico.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      inp.type = 'password';
+      if (ico) ico.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  }
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('#eye-reg-pass')) toggleEye('reg-pass', 'eye-reg-pass-icon');
+    if (e.target.closest('#eye-reg-pass2')) toggleEye('reg-pass2', 'eye-reg-pass2-icon');
+  });
+
+  // LOGIN
+  document.getElementById('login-btn').addEventListener('click', async () => {
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
+    const pass = document.getElementById('login-pass').value;
+    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { setErr('Email invalide.'); return; }
+    if (!pass) { setErr('Mot de passe requis.'); return; }
+    const accounts = loadAccounts();
+    if (!accounts[email]) { setErr('Aucun compte avec cet email. Créez un accès d\'abord.'); return; }
+    const hashed = await hashPass(pass);
+    const storedHash = typeof accounts[email] === 'object' ? accounts[email].hash : accounts[email];
+    if (storedHash !== hashed) { setErr('Mot de passe incorrect.'); return; }
+    saveSession(email);
+    showUser(email);
+    gate.hidden = true;
+  });
+
+  // REGISTER
+  document.getElementById('reg-btn').addEventListener('click', async () => {
+    try {
+      const email = document.getElementById('reg-email').value.trim().toLowerCase();
+      const pass  = document.getElementById('reg-pass').value;
+      const pass2 = document.getElementById('reg-pass2').value;
+      const teamKey = document.getElementById('reg-team-key').value;
+      if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { setErr('Email invalide.'); return; }
+      if (!teamKey) { setErr('Clef d\'équipe requise.'); return; }
+      if (teamKey !== getTeamKey()) { setErr('Clef d\'équipe incorrecte. Demande-la à l\'admin.'); return; }
+      if (pass.length < 8) { setErr('Mot de passe trop court (8 caractères minimum).'); return; }
+      if (pass !== pass2) { setErr('Les mots de passe ne correspondent pas.'); return; }
+      const accounts = loadAccounts();
+      if (accounts[email]) { setErr('Un compte existe déjà avec cet email.'); return; }
+      const hashed = await hashPass(pass);
+      accounts[email] = { hash: hashed };
+      saveAccounts(accounts);
+      setOk('Compte créé ✅ — Tu peux maintenant te connecter.');
+    } catch(e) {
+      setErr('Erreur : ' + e.message);
+    }
+  });
+
+  // Enter key
+  ['login-email','login-pass'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('login-btn').click(); });
+  });
+  ['reg-email','reg-team-key','reg-pass','reg-pass2'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('reg-btn').click(); });
+  });
+
+  const stored = loadSession();
+  if (stored) { showUser(stored); gate.hidden = true; return; }
+
+  gate.hidden = false;
+  showForm('login');
+}
+
+document.getElementById('admin-key-btn').addEventListener('click', () => {
+  const current = getTeamKey();
+  const newKey = prompt(`Clef d'équipe actuelle : "${current}"\n\nNouvelle clef (laisse vide pour annuler) :`);
+  if (newKey && newKey.trim()) {
+    setTeamKey(newKey.trim());
+    alert(`✅ Clef mise à jour : "${newKey.trim()}"`);
+  }
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  clearSession();
+  document.getElementById('user-label').textContent = '';
+  document.getElementById('user-avatar').textContent = '?';
+  document.getElementById('login-gate').hidden = false;
+  showForm('login');
+  ['login-email','login-pass'].forEach(id => { document.getElementById(id).value = ''; });
+});
+
+/* ─── TASKS ─── */
+function taskHTML(t) {
+  const chk = state.checked[t.id] ? 'checked' : '';
+  const doneClass = state.checked[t.id] ? 'done' : '';
+  const entClass = t.ent ? `ent-${t.ent}` : '';
+  const badge = t.ent ? `<span class="ent-badge">${ENT_LABELS[t.ent]}</span>` : '';
+  const urgBadge = t.urgent && !state.checked[t.id] ? '<span class="tag-urgent">Urgent</span>' : '';
+  return `<div class="task-item ${doneClass} ${entClass}" data-tid="${t.id}">
+    <input type="checkbox" class="task-cb" data-tid="${t.id}" ${chk}>
+    <span class="task-text">${t.text}</span>
+    ${badge}${urgBadge}
+  </div>`;
+}
+
+function buildSections() {
+  const container = document.getElementById('sections-container');
+  container.innerHTML = '';
+  SECTIONS.forEach(section => {
+    const custom = state.custom[section.id] || [];
+    const all = [...section.tasks, ...custom];
+    const pending = all.filter(t => !state.checked[t.id]);
+    const done = all.filter(t => state.checked[t.id]);
+    const doneN = done.length;
+    const el = document.createElement('div');
+    el.className = 'tsect';
+    el.dataset.sid = section.id;
+
+    let bodyHTML = pending.map(t => taskHTML(t)).join('');
+    if (done.length > 0) {
+      bodyHTML += `<div class="done-sep">Validées (${done.length})</div>`;
+      bodyHTML += done.map(t => taskHTML(t)).join('');
+    }
+    bodyHTML += `<div class="add-row">
+      <select class="add-ent-sel" data-sid="${section.id}">
+        <option value="mt">MT</option>
+        <option value="mtp">MTP</option>
+        <option value="lm">LM/FJ</option>
+      </select>
+      <input class="add-input" type="text" placeholder="Ajouter une tâche…" data-sid="${section.id}">
+      <button class="add-btn" data-sid="${section.id}">Ajouter</button>
+    </div>`;
+
+    el.innerHTML = `
+      <div class="tsect-head">
+        <span class="tsect-name">${section.name}</span>
+        <span class="tsect-count">${doneN} / ${all.length}</span>
+        <span class="tsect-chev">▼</span>
+      </div>
+      <div class="tsect-body">${bodyHTML}</div>`;
+    container.appendChild(el);
+  });
+  bindEvents();
+  updateAll();
+}
+
+function bindEvents() {
+  document.querySelectorAll('.task-cb').forEach(cb => {
+    cb.addEventListener('change', function() {
+      state.checked[this.dataset.tid] = this.checked;
+      saveState(state);
+      buildSections();
+    });
+  });
+  document.querySelectorAll('.tsect-head').forEach(h => {
+    h.addEventListener('click', function(e) {
+      if (e.target.matches('.add-input,.add-btn,.add-ent-sel')) return;
+      this.closest('.tsect').classList.toggle('collapsed');
+    });
+  });
+  document.querySelectorAll('.add-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const sid = this.dataset.sid;
+      const input = document.querySelector(`.add-input[data-sid="${sid}"]`);
+      const ent = document.querySelector(`.add-ent-sel[data-sid="${sid}"]`).value;
+      const text = input.value.trim();
+      if (!text) return;
+      if (!state.custom[sid]) state.custom[sid] = [];
+      state.custom[sid].push({ id:'cx_'+Date.now(), text, ent });
+      saveState(state);
+      input.value = '';
+      buildSections();
+    });
+  });
+  document.querySelectorAll('.add-input').forEach(inp => {
+    inp.addEventListener('click', e => e.stopPropagation());
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') document.querySelector(`.add-btn[data-sid="${this.dataset.sid}"]`).click();
+    });
+  });
+  document.querySelectorAll('.add-ent-sel').forEach(s => s.addEventListener('click', e => e.stopPropagation()));
+}
+
+function updateAll() {
+  let total = 0, done = 0;
+  SECTIONS.forEach(s => {
+    const all = [...s.tasks, ...(state.custom[s.id] || [])];
+    total += all.length; done += all.filter(t => state.checked[t.id]).length;
+  });
+  const pct = total > 0 ? Math.round((done/total)*100) : 0;
+  ['hd-total','ov-total'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=total; });
+  ['hd-done','ov-done'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=done; });
+  ['hd-pct','ov-pct'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=pct+'%'; });
+  const prog=document.getElementById('ov-prog'); if(prog) prog.style.width=pct+'%';
+  const ov_left=document.getElementById('ov-left'); if(ov_left) ov_left.textContent=total-done;
+  const sg=document.getElementById('sector-grid');
+  if(sg) {
+    sg.innerHTML = SECTIONS.map(s => {
+      const all=[...s.tasks,...(state.custom[s.id]||[])];
+      const dN=all.filter(t=>state.checked[t.id]).length;
+      const p=all.length?Math.round((dN/all.length)*100):0;
+      return `<div class="sector-card">
+        <div style="flex:1">
+          <div class="sector-name">${s.name}</div>
+          <div class="sector-bar"><div class="sector-fill" style="width:${p}%"></div></div>
+        </div>
+        <div class="sector-pct-wrap">
+          <div class="sector-pct">${p}%</div>
+          <div class="sector-ct">${dN}/${all.length}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+/* ─── CALENDAR ─── */
+const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const DAYS_FR = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+const ENT_TAG_CLASS = { mt:'mt', mtp:'mtp', lm:'lm' };
+
+let calYear = 2026, calMonth = 9; // Oct = index 9
+let selectedDate = null;
+
+function calKey(y, m, d) {
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function renderCal() {
+  document.getElementById('cal-month-label').textContent =
+    MONTHS_FR[calMonth] + ' ' + calYear;
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const firstDay = new Date(calYear, calMonth, 1);
+  // Monday=0, ..., Sunday=6
+  let startDow = firstDay.getDay(); // 0=Sun
+  startDow = startDow === 0 ? 6 : startDow - 1; // convert to Mon-based
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+
+  const grid = document.getElementById('cal-days');
+  grid.innerHTML = '';
+
+  // Cells: 6 rows × 7 = 42 cells
+  const totalCells = Math.ceil((startDow + daysInMonth) / 7) * 7;
+
+  for (let i = 0; i < totalCells; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-day';
+    let dayNum, cellYear = calYear, cellMonth = calMonth;
+
+    if (i < startDow) {
+      dayNum = daysInPrev - startDow + i + 1;
+      cellMonth = calMonth - 1;
+      if (cellMonth < 0) { cellMonth = 11; cellYear--; }
+      cell.classList.add('other-month');
+    } else if (i >= startDow + daysInMonth) {
+      dayNum = i - startDow - daysInMonth + 1;
+      cellMonth = calMonth + 1;
+      if (cellMonth > 11) { cellMonth = 0; cellYear++; }
+      cell.classList.add('other-month');
+    } else {
+      dayNum = i - startDow + 1;
+    }
+
+    const cellDate = new Date(cellYear, cellMonth, dayNum);
+    const keyStr = calKey(cellYear, cellMonth, dayNum);
+
+    if (!cell.classList.contains('other-month')) {
+      cellDate.setHours(0,0,0,0);
+      if (cellDate.getTime() === today.getTime()) cell.classList.add('today');
+    }
+
+    if (selectedDate === keyStr) cell.classList.add('selected');
+
+    const evs = CAL_EVENTS[keyStr] || [];
+    if (evs.length > 0) cell.classList.add('has-event');
+
+    const dots = evs.slice(0,3).map(ev => {
+      const col = ENT_COL[ev.ent] || 'var(--accent)';
+      return `<div class="cal-dot" style="background:${col}"></div>`;
+    }).join('');
+
+    cell.innerHTML = `<span class="cal-day-num">${dayNum}</span><div class="cal-dots">${dots}</div>`;
+
+    if (!cell.classList.contains('other-month')) {
+      cell.addEventListener('click', () => {
+        selectedDate = keyStr;
+        renderCal();
+        renderSelDay(keyStr, dayNum, cellDate);
+      });
+    }
+
+    grid.appendChild(cell);
+  }
+}
+
+const EV_ICONS = { mt:'✈️', mtp:'📋', lm:'🎵', Sortie:'🚀', Série:'📅', Admin:'📌' };
+
+function renderSelDay(keyStr, dayNum, date) {
+  const dow = DAYS_FR[date.getDay() === 0 ? 6 : date.getDay() - 1];
+  const mon = MONTHS_FR[date.getMonth()];
+  document.getElementById('cal-sel-date').textContent = `${dayNum} ${mon}`;
+  document.getElementById('cal-sel-dow').textContent = dow;
+
+  // Show upcoming events: selected day + next 30 days that have events
+  const body = document.getElementById('cal-events-list');
+  const today = new Date(); today.setHours(0,0,0,0);
+  
+  // Collect dates with events starting from selected date
+  const selDateObj = new Date(date); selDateObj.setHours(0,0,0,0);
+  const groups = [];
+  for (let i = 0; i <= 90; i++) {
+    const d = new Date(selDateObj); d.setDate(d.getDate() + i);
+    const k = d.toISOString().slice(0,10);
+    if (CAL_EVENTS[k] && CAL_EVENTS[k].length > 0) {
+      groups.push({ date: d, key: k, evs: CAL_EVENTS[k] });
+    }
+    if (groups.length >= 12) break;
+  }
+
+  if (groups.length === 0) {
+    body.innerHTML = '<div class="cal-no-event">Aucun événement à venir</div>';
+    return;
+  }
+
+  body.innerHTML = groups.map(g => {
+    const isToday = g.date.getTime() === today.getTime();
+    const isSel = g.key === keyStr;
+    const dayN = g.date.getDate();
+    const monN = MONTHS_FR[g.date.getMonth()];
+    const dowN = DAYS_FR[g.date.getDay() === 0 ? 6 : g.date.getDay() - 1];
+    const label = isToday ? `Aujourd'hui · ${dowN} ${dayN} ${monN}` : `${dowN} ${dayN} ${monN}`;
+
+    const rows = g.evs.map(ev => {
+      const col = ENT_COL[ev.ent] || 'var(--accent)';
+      const tcls = ENT_TAG_CLASS[ev.ent] || '';
+      const tagCls = ev.tag === 'Sortie' ? 'urgent' : (tcls || '');
+      const icon = EV_ICONS[ev.tag] || EV_ICONS[ev.ent] || '📌';
+      return `<div class="cal-ev-item">
+        <div class="cal-ev-icon" style="background:${col}20">${icon}</div>
+        <div class="cal-ev-body">
+          <div class="cal-ev-title">${ev.title}</div>
+          ${ev.sub ? `<div class="cal-ev-sub">${ev.sub}</div>` : ''}
+          <span class="cal-ev-tag ${tagCls}">${ev.tag}</span>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="cal-date-group">
+      <div class="cal-date-divider">
+        <div class="cal-date-divider-line"></div>
+        <div class="cal-date-divider-label">${label}</div>
+        <div class="cal-date-divider-line"></div>
+      </div>
+      ${rows}
+    </div>`;
+  }).join('');
+}
+
+function resetAgenda() {
+  document.getElementById('cal-sel-date').textContent = MONTHS_FR[calMonth] + ' ' + calYear;
+  document.getElementById('cal-sel-dow').textContent = '';
+  document.getElementById('cal-events-list').innerHTML = '<div class="cal-no-event">Cliquez une date pour voir l'agenda</div>';
+}
+document.getElementById('cal-prev').addEventListener('click', () => {
+  calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
+  selectedDate = null; renderCal(); resetAgenda();
+});
+document.getElementById('cal-next').addEventListener('click', () => {
+  calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; }
+  selectedDate = null; renderCal(); resetAgenda();
+});
+
+/* ─── TABS ─── */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('view-' + this.dataset.view).classList.add('active');
+    updateAll();
+    if (this.dataset.view === 'calendar') renderCal();
+  });
+});
+
+/* ─── INIT ─── */
+window.onerror = function(msg, src, line) {
+  const el = document.getElementById('js-error-bar');
+  if (el) { el.textContent = '⚠️ JS Error: ' + msg + ' (line ' + line + ')'; el.style.display = 'block'; }
+};
+try { initAuth(); } catch(e) {
+  const el = document.getElementById('js-error-bar');
+  if (el) { el.textContent = '⚠️ initAuth crash: ' + e.message; el.style.display = 'block'; }
+}
+buildSections();
+renderCal();
+// Auto-select today if in current month
+const todayKey = new Date().toISOString().slice(0,10);
+if (todayKey.startsWith(`${calYear}-${String(calMonth+1).padStart(2,'0')}`)) {
+  const todayDate = new Date();
+  selectedDate = todayKey;
+  renderCal();
+  renderSelDay(todayKey, todayDate.getDate(), todayDate);
+}
+</script>
