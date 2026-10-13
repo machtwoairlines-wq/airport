@@ -577,14 +577,14 @@ body:has(#login:target) #register { display: none; }
       <label class="login-label" for="reg-pass">Choisir un mot de passe</label>
       <div style="position:relative;margin-bottom:14px;">
         <input class="login-input" type="password" id="reg-pass" name="password" placeholder="8 caractères minimum" autocomplete="new-password" style="margin-bottom:0;padding-right:44px;width:100%;">
-        <button type="button" id="eye-reg-pass" title="Voir" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--fg3);padding:4px;display:flex;align-items:center;z-index:10;-webkit-appearance:none;">
+        <button type="button" id="eye-reg-pass" onclick="toggleEye('reg-pass','eye-reg-pass-icon')" title="Voir" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--fg3);padding:4px;display:flex;align-items:center;z-index:10;-webkit-appearance:none;">
           <svg id="eye-reg-pass-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
       <label class="login-label" for="reg-pass2">Confirmer le mot de passe</label>
       <div style="position:relative;margin-bottom:14px;">
         <input class="login-input" type="password" id="reg-pass2" placeholder="••••••••" autocomplete="new-password" style="margin-bottom:0;padding-right:44px;width:100%;">
-        <button type="button" id="eye-reg-pass2" title="Voir" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--fg3);padding:4px;display:flex;align-items:center;z-index:10;-webkit-appearance:none;">
+        <button type="button" id="eye-reg-pass2" onclick="toggleEye('reg-pass2','eye-reg-pass2-icon')" title="Voir" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--fg3);padding:4px;display:flex;align-items:center;z-index:10;-webkit-appearance:none;">
           <svg id="eye-reg-pass2-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
@@ -886,6 +886,20 @@ function loadState() {
 function saveState(s) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch(e) {} }
 let state = loadState();
 
+/* ─── EYE TOGGLE (global) ─── */
+function toggleEye(inputId, iconId) {
+  const inp = document.getElementById(inputId);
+  const ico = document.getElementById(iconId);
+  if (!inp) return;
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    if (ico) ico.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type = 'password';
+    if (ico) ico.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
 /* ─── SUPABASE AUTH ─── */
 const SUPABASE_URL  = 'https://hfaiuxkjzjcrnsejzger.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmYWl1eGtqempjcm5zZWp6Z2VyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTUxOTksImV4cCI6MjEwNzEzMTE5OX0.EGgdaD9M3b8kTXJOxK2JKS-13PfIkWlXCe3_HxR-obo';
@@ -927,24 +941,6 @@ async function initAuth() {
   const gate = document.getElementById('login-gate');
   document.getElementById('go-register').addEventListener('click', () => showForm('register'));
   document.getElementById('go-login').addEventListener('click', () => showForm('login'));
-
-  // EYE TOGGLE
-  function toggleEye(inputId, iconId) {
-    const inp = document.getElementById(inputId);
-    const ico = document.getElementById(iconId);
-    if (!inp) return;
-    if (inp.type === 'password') {
-      inp.type = 'text';
-      if (ico) ico.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-    } else {
-      inp.type = 'password';
-      if (ico) ico.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-    }
-  }
-  const eyeBtn1 = document.getElementById('eye-reg-pass');
-  const eyeBtn2 = document.getElementById('eye-reg-pass2');
-  if (eyeBtn1) eyeBtn1.addEventListener('click', function(e) { e.stopPropagation(); toggleEye('reg-pass', 'eye-reg-pass-icon'); });
-  if (eyeBtn2) eyeBtn2.addEventListener('click', function(e) { e.stopPropagation(); toggleEye('reg-pass2', 'eye-reg-pass2-icon'); });
 
   // LOGIN
   document.getElementById('login-btn').addEventListener('click', async () => {
