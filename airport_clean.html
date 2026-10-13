@@ -1281,7 +1281,7 @@ function renderSelDay(keyStr, dayNum, date) {
 function resetAgenda() {
   document.getElementById('cal-sel-date').textContent = MONTHS_FR[calMonth] + ' ' + calYear;
   document.getElementById('cal-sel-dow').textContent = '';
-  document.getElementById('cal-events-list').innerHTML = '<div class="cal-no-event">Cliquez une date pour voir l'agenda</div>';
+  document.getElementById('cal-events-list').innerHTML = '<div class="cal-no-event">Cliquez une date pour voir l’agenda</div>';
 }
 document.getElementById('cal-prev').addEventListener('click', () => {
   calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
