@@ -425,6 +425,137 @@ body:has(#login:target) #register { display: none; }
   text-align: center; color: var(--fg3); font-size: 13px;
 }
 
+/* ─── WEEK VIEW ─── */
+.cal-week-view { display:flex; flex-direction:column; overflow:hidden; flex:1; min-height:0; }
+.week-nav {
+  display:flex; align-items:center; gap:8px; padding:12px 16px 10px;
+  border-bottom:1px solid var(--border); flex-shrink:0;
+}
+.week-nav-label { font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:15px; color:var(--fg); flex:1; letter-spacing:-.01em; }
+.week-today-btn, .week-add-btn {
+  font-size:12px; font-weight:600; padding:4px 10px; border-radius:7px; cursor:pointer;
+  border:1px solid var(--border); background:var(--surface2); color:var(--fg2); transition:background .1s;
+}
+.week-add-btn { background:var(--accent); color:#fff; border-color:var(--accent); }
+.week-today-btn:hover { background:var(--surface); }
+.week-add-btn:hover { opacity:.88; }
+.week-head-row {
+  display:grid; grid-template-columns:52px repeat(7,1fr);
+  border-bottom:1px solid var(--border); flex-shrink:0;
+}
+.week-head-gutter { }
+.week-head-day {
+  text-align:center; padding:7px 4px 6px; cursor:pointer;
+  font-size:11px; font-weight:600; color:var(--fg3); letter-spacing:.03em; text-transform:uppercase;
+}
+.week-head-day .wh-num {
+  display:block; font-size:18px; font-weight:800; color:var(--fg); letter-spacing:-.02em;
+  font-family:'Plus Jakarta Sans',sans-serif; line-height:1.1; margin-bottom:1px;
+}
+.week-head-day.today .wh-num {
+  background:var(--accent); color:#fff; border-radius:50%; width:30px; height:30px;
+  display:inline-flex; align-items:center; justify-content:center; font-size:15px;
+}
+.week-head-day.today { color:var(--accent); }
+.week-scroll { flex:1; overflow-y:auto; position:relative; }
+.week-grid {
+  display:grid; grid-template-columns:52px repeat(7,1fr);
+  position:relative;
+}
+.week-gutter { display:flex; flex-direction:column; }
+.week-hour-label {
+  height:64px; display:flex; align-items:flex-start; justify-content:flex-end;
+  padding:2px 8px 0 0; font-size:10px; font-weight:500; color:var(--fg3);
+  letter-spacing:.02em; flex-shrink:0; box-sizing:border-box;
+}
+.week-col {
+  position:relative; border-left:1px solid var(--border);
+}
+.week-slot {
+  height:64px; border-top:1px solid var(--border); box-sizing:border-box; cursor:crosshair;
+}
+.week-slot.half { border-top:1px dashed color-mix(in srgb,var(--border) 50%,transparent); }
+.week-col.today-col { background:color-mix(in srgb,var(--accent) 3%,transparent); }
+.week-ev {
+  position:absolute; left:3px; right:3px; border-radius:6px; overflow:hidden;
+  cursor:grab; user-select:none; box-sizing:border-box; min-height:20px;
+  padding:3px 7px; font-size:11.5px; font-weight:600; line-height:1.3;
+  border-left:3px solid; box-shadow:0 1px 3px rgba(0,0,0,.08);
+  transition:box-shadow .1s, opacity .1s;
+  pointer-events:auto;
+}
+.week-ev:hover { box-shadow:0 3px 8px rgba(0,0,0,.15); z-index:10; }
+.week-ev.dragging { opacity:.7; z-index:100; cursor:grabbing; box-shadow:0 8px 24px rgba(0,0,0,.2); }
+.week-ev-title { font-size:11.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.week-ev-time { font-size:10px; font-weight:500; opacity:.75; }
+.week-ev-resize {
+  position:absolute; bottom:0; left:0; right:0; height:8px; cursor:ns-resize;
+  border-radius:0 0 6px 6px;
+}
+.week-now-line {
+  position:absolute; left:0; right:0; height:2px; background:var(--accent);
+  z-index:20; pointer-events:none;
+}
+.week-now-dot {
+  position:absolute; left:-5px; top:-4px; width:10px; height:10px;
+  border-radius:50%; background:var(--accent);
+}
+/* Event create ghost */
+.week-ghost {
+  position:absolute; left:3px; right:3px; border-radius:6px;
+  background:var(--accent); opacity:.35; z-index:50; pointer-events:none;
+}
+/* Event modal */
+.ev-modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:2000;
+  display:flex; align-items:center; justify-content:center; padding:24px;
+}
+.ev-modal-overlay[hidden] { display:none!important; }
+.ev-modal {
+  background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  padding:24px; width:100%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,.2);
+}
+.ev-modal h3 { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:17px; margin:0 0 16px; }
+.ev-modal label { display:block; font-size:11px; font-weight:700; color:var(--fg3); letter-spacing:.05em; text-transform:uppercase; margin-bottom:4px; margin-top:12px; }
+.ev-modal label:first-of-type { margin-top:0; }
+.ev-modal input, .ev-modal select {
+  width:100%; padding:9px 12px; border-radius:9px; border:1px solid var(--border);
+  background:var(--bg); color:var(--fg); font-size:14px; box-sizing:border-box;
+}
+.ev-modal .ev-modal-row { display:flex; gap:8px; }
+.ev-modal .ev-modal-row input { flex:1; }
+.ev-modal-actions { display:flex; gap:8px; margin-top:18px; justify-content:flex-end; }
+.ev-modal-actions button { padding:8px 18px; border-radius:9px; font-size:13px; font-weight:600; cursor:pointer; border:none; }
+.ev-modal-del { background:var(--surface2); color:var(--fg3); border:1px solid var(--border)!important; margin-right:auto; }
+.ev-modal-del:hover { background:#fee2e2; color:#dc2626; border-color:#fca5a5!important; }
+.ev-modal-cancel { background:var(--surface2); color:var(--fg2); border:1px solid var(--border)!important; }
+.ev-modal-save { background:var(--accent); color:#fff; }
+
+/* ─── TASK DETAIL MODAL ─── */
+.td-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:300; display:flex; align-items:flex-end; justify-content:center; }
+.td-panel { background:var(--surface); border-radius:18px 18px 0 0; width:100%; max-width:560px; max-height:88vh; overflow-y:auto; padding:24px 20px 32px; display:flex; flex-direction:column; gap:14px; }
+.td-drag-handle { width:40px; height:4px; background:var(--border); border-radius:2px; margin:0 auto -4px; }
+.td-title-row { display:flex; gap:10px; align-items:center; }
+.td-title-inp { flex:1; font-size:16px; font-weight:700; color:var(--fg); background:transparent; border:none; outline:none; padding:4px 0; border-bottom:2px solid var(--border); font-family:inherit; }
+.td-title-inp:focus { border-bottom-color:var(--accent); }
+.td-ent-sel { font-size:12px; font-weight:600; border:1px solid var(--border); border-radius:7px; padding:4px 8px; background:var(--surface2); color:var(--fg2); cursor:pointer; }
+.td-field { display:flex; flex-direction:column; gap:5px; }
+.td-label { font-size:11px; font-weight:700; color:var(--fg3); text-transform:uppercase; letter-spacing:.05em; }
+.td-inp { font-size:13px; color:var(--fg); background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; width:100%; box-sizing:border-box; font-family:inherit; }
+.td-inp:focus { outline:none; border-color:var(--accent); }
+textarea.td-inp { resize:vertical; min-height:70px; }
+.td-contacts-wrap { display:flex; flex-wrap:wrap; gap:6px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:6px 8px; min-height:36px; cursor:text; }
+.td-contact-tag { background:var(--accent); color:#fff; border-radius:20px; font-size:11.5px; font-weight:600; padding:2px 8px 2px 10px; display:flex; align-items:center; gap:4px; }
+.td-contact-tag button { background:none; border:none; color:#fff; cursor:pointer; font-size:14px; line-height:1; padding:0; }
+.td-contact-inp { border:none; outline:none; background:transparent; font-size:13px; color:var(--fg); min-width:120px; flex:1; font-family:inherit; }
+.td-row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.td-actions { display:flex; justify-content:space-between; margin-top:4px; }
+.td-del { background:none; border:1px solid var(--border); color:var(--fg3); border-radius:8px; padding:8px 14px; font-size:13px; cursor:pointer; }
+.td-del:hover { background:#fee2e2; color:#dc2626; border-color:#fca5a5; }
+.td-save { background:var(--accent); color:#fff; border:none; border-radius:8px; padding:8px 20px; font-size:13px; font-weight:700; cursor:pointer; }
+.td-save:hover { opacity:.9; }
+.week-task-ev { position:absolute; left:3px; right:3px; border-radius:5px; font-size:10.5px; font-weight:600; padding:2px 6px; cursor:pointer; pointer-events:auto; border-left:3px solid; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+
 /* ─── TASKS ─── */
 .tasks-stack { display: flex; flex-direction: column; gap: 10px; }
 .tsect {
@@ -732,14 +863,47 @@ body:has(#login:target) #register { display: none; }
         </div>
         <div class="cal-days" id="cal-days"></div>
       </div>
-      <!-- right: agenda -->
-      <div class="cal-agenda">
-        <div class="cal-agenda-head">
-          <div class="cal-agenda-date" id="cal-sel-date">Agenda</div>
-          <div class="cal-agenda-dow" id="cal-sel-dow">Cliquez une date</div>
+      <!-- right: week view -->
+      <div class="cal-week-view">
+        <div class="week-nav">
+          <button class="cal-nav-btn" id="week-prev">&#8592;</button>
+          <div class="week-nav-label" id="week-nav-label"></div>
+          <button class="cal-nav-btn" id="week-next">&#8594;</button>
+          <button class="week-today-btn" id="week-today-btn">Aujourd&rsquo;hui</button>
+          <button class="week-add-btn" id="week-add-btn">+ Ajouter</button>
         </div>
-        <div class="cal-agenda-body" id="cal-events-list">
-          <div class="cal-no-event">Sélectionnez une date</div>
+        <div class="week-head-row" id="week-head-row">
+          <div class="week-head-gutter"></div>
+        </div>
+        <div class="week-scroll" id="week-scroll">
+          <div class="week-grid" id="week-grid"></div>
+        </div>
+      </div>
+
+      <!-- Event modal -->
+      <div class="ev-modal-overlay" id="ev-modal-overlay" hidden>
+        <div class="ev-modal">
+          <h3 id="ev-modal-title">Nouvel événement</h3>
+          <label>Titre</label>
+          <input type="text" id="ev-inp-title" placeholder="Ex: Réunion Mach Two">
+          <label>Date</label>
+          <input type="date" id="ev-inp-date">
+          <label>Horaire</label>
+          <div class="ev-modal-row">
+            <input type="time" id="ev-inp-start" value="10:00">
+            <input type="time" id="ev-inp-end" value="11:00">
+          </div>
+          <label>Catégorie</label>
+          <select id="ev-inp-ent">
+            <option value="mt">Mach Two</option>
+            <option value="mtp">Mach Two TakeOff</option>
+            <option value="lm">La Madone / FJ</option>
+          </select>
+          <div class="ev-modal-actions">
+            <button class="ev-modal-del" id="ev-modal-del" hidden>Supprimer</button>
+            <button class="ev-modal-cancel" id="ev-modal-cancel">Annuler</button>
+            <button class="ev-modal-save" id="ev-modal-save">Enregistrer</button>
+          </div>
         </div>
       </div>
     </div>
@@ -751,6 +915,48 @@ body:has(#login:target) #register { display: none; }
   </div>
 
 </main>
+
+<!-- Task detail panel -->
+<div class="td-overlay" id="td-overlay" hidden>
+  <div class="td-panel" id="td-panel">
+    <div class="td-drag-handle"></div>
+    <div class="td-title-row">
+      <input class="td-title-inp" id="td-title" type="text" placeholder="Titre de la tâche">
+      <select class="td-ent-sel" id="td-ent">
+        <option value="mt">MT</option>
+        <option value="mtp">MTP</option>
+        <option value="lm">LM/FJ</option>
+      </select>
+    </div>
+    <div class="td-row2">
+      <div class="td-field">
+        <label class="td-label">📅 Date (optionnel)</label>
+        <input class="td-inp" id="td-date" type="date">
+      </div>
+      <div class="td-field">
+        <label class="td-label">🔔 Rappel</label>
+        <input class="td-inp" id="td-reminder" type="datetime-local">
+      </div>
+    </div>
+    <div class="td-field">
+      <label class="td-label">📝 Notes</label>
+      <textarea class="td-inp" id="td-notes" placeholder="Ajouter des notes…"></textarea>
+    </div>
+    <div class="td-field">
+      <label class="td-label">👤 Contacts</label>
+      <div class="td-contacts-wrap" id="td-contacts-wrap">
+        <input class="td-contact-inp" id="td-contact-inp" type="text" placeholder="Ajouter un contact…">
+      </div>
+    </div>
+    <div class="td-actions">
+      <button class="td-del" id="td-del">Supprimer</button>
+      <div style="display:flex;gap:8px">
+        <button class="td-del" id="td-cancel" style="color:var(--fg2)">Annuler</button>
+        <button class="td-save" id="td-save">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 <script>
@@ -1027,27 +1233,128 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
 });
 
 /* ─── TASKS ─── */
+// sbTasks: Map id→task (merged static + Supabase custom)
+let sbTasks = {}; // { [id]: {id,section_id,text,ent,urgent,checked,date,notes,contacts,reminder_at,is_static} }
+let _sbTasksReady = false;
+
+/* Merge static SECTIONS into sbTasks (first time only, non-destructive) */
+function initStaticTasks() {
+  SECTIONS.forEach(sec => {
+    sec.tasks.forEach(t => {
+      if (!sbTasks[t.id]) {
+        sbTasks[t.id] = { id:t.id, section_id:sec.id, text:t.text, ent:t.ent||'mt',
+          urgent:!!t.urgent, checked:state.checked[t.id]||false,
+          date:null, notes:'', contacts:[], reminder_at:null, is_static:true };
+      } else {
+        // update checked from Supabase but keep static flag
+        sbTasks[t.id].is_static = true;
+      }
+    });
+  });
+}
+
+/* Load tasks from Supabase (custom ones) */
+async function loadSbTasks() {
+  try {
+    const { data, error } = await sb.from('tasks').select('*');
+    if (error) { console.warn('[TASKS] Supabase load failed, using local', error.message); }
+    else {
+      data.forEach(row => {
+        sbTasks[row.id] = {
+          id: row.id, section_id: row.section_id, text: row.text,
+          ent: row.ent || 'mt', urgent: !!row.urgent, checked: !!row.checked,
+          date: row.date || null, notes: row.notes || '',
+          contacts: Array.isArray(row.contacts) ? row.contacts : [],
+          reminder_at: row.reminder_at || null, is_static: !!row.is_static
+        };
+      });
+    }
+  } catch(e) { console.warn('[TASKS] load error', e); }
+  initStaticTasks();
+  _sbTasksReady = true;
+  buildSections();
+  renderWeekView();
+}
+
+/* Upsert a task to Supabase (fire-and-forget) */
+async function upsertTask(t) {
+  try {
+    const payload = {
+      id: t.id, section_id: t.section_id, text: t.text, ent: t.ent,
+      urgent: t.urgent, checked: t.checked, date: t.date || null,
+      notes: t.notes || '', contacts: t.contacts || [],
+      reminder_at: t.reminder_at || null, is_static: !!t.is_static
+    };
+    await sb.from('tasks').upsert(payload, { onConflict:'id' });
+  } catch(e) { console.warn('[TASKS] upsert error', e); }
+}
+
+/* Delete a custom task from Supabase */
+async function deleteTask(id) {
+  sbTasks[id] && delete sbTasks[id];
+  state.custom = {};
+  Object.keys(sbTasks).forEach(k => {
+    const t = sbTasks[k];
+    if (!t.is_static) {
+      if (!state.custom[t.section_id]) state.custom[t.section_id] = [];
+      state.custom[t.section_id].push(t);
+    }
+  });
+  saveState(state);
+  try { await sb.from('tasks').delete().eq('id', id); } catch(e) {}
+  buildSections(); renderWeekView(); renderCal();
+}
+
+/* Subscribe to real-time task changes */
+function subscribeTasksRT() {
+  sb.channel('tasks-rt')
+    .on('postgres_changes', { event:'*', schema:'public', table:'tasks' }, payload => {
+      const row = payload.new || payload.old;
+      if (!row) return;
+      if (payload.eventType === 'DELETE') {
+        delete sbTasks[row.id];
+      } else {
+        sbTasks[row.id] = {
+          id: row.id, section_id: row.section_id, text: row.text,
+          ent: row.ent || 'mt', urgent: !!row.urgent, checked: !!row.checked,
+          date: row.date || null, notes: row.notes || '',
+          contacts: Array.isArray(row.contacts) ? row.contacts : [],
+          reminder_at: row.reminder_at || null, is_static: !!row.is_static
+        };
+      }
+      buildSections(); renderWeekView(); renderCal();
+    })
+    .subscribe();
+}
+
+/* Get all tasks for a section (static + custom) */
+function getSectionTasks(secId) {
+  return Object.values(sbTasks).filter(t => t.section_id === secId);
+}
+
 function taskHTML(t) {
-  const chk = state.checked[t.id] ? 'checked' : '';
-  const doneClass = state.checked[t.id] ? 'done' : '';
+  const doneClass = t.checked ? 'done' : '';
   const entClass = t.ent ? `ent-${t.ent}` : '';
   const badge = t.ent ? `<span class="ent-badge">${ENT_LABELS[t.ent]}</span>` : '';
-  const urgBadge = t.urgent && !state.checked[t.id] ? '<span class="tag-urgent">Urgent</span>' : '';
-  return `<div class="task-item ${doneClass} ${entClass}" data-tid="${t.id}">
-    <input type="checkbox" class="task-cb" data-tid="${t.id}" ${chk}>
-    <span class="task-text">${t.text}</span>
-    ${badge}${urgBadge}
+  const urgBadge = t.urgent && !t.checked ? '<span class="tag-urgent">Urgent</span>' : '';
+  const dateBadge = t.date ? `<span class="ent-badge" style="background:var(--surface3,#e2e8f0);color:var(--fg3);border:1px solid var(--border)">📅 ${t.date.slice(5).replace('-','/')}</span>` : '';
+  const hasMeta = t.notes || (t.contacts && t.contacts.length) || t.reminder_at;
+  const metaDot = hasMeta ? '<span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;margin-left:4px;vertical-align:middle"></span>' : '';
+  return `<div class="task-item ${doneClass} ${entClass}" data-tid="${t.id}" style="cursor:pointer">
+    <input type="checkbox" class="task-cb" data-tid="${t.id}" ${t.checked?'checked':''}>
+    <span class="task-text">${t.text}${metaDot}</span>
+    ${dateBadge}${badge}${urgBadge}
   </div>`;
 }
 
 function buildSections() {
   const container = document.getElementById('sections-container');
+  if (!container) return;
   container.innerHTML = '';
   SECTIONS.forEach(section => {
-    const custom = state.custom[section.id] || [];
-    const all = [...section.tasks, ...custom];
-    const pending = all.filter(t => !state.checked[t.id]);
-    const done = all.filter(t => state.checked[t.id]);
+    const all = getSectionTasks(section.id);
+    const pending = all.filter(t => !t.checked);
+    const done = all.filter(t => t.checked);
     const doneN = done.length;
     const el = document.createElement('div');
     el.className = 'tsect';
@@ -1083,10 +1390,22 @@ function buildSections() {
 
 function bindEvents() {
   document.querySelectorAll('.task-cb').forEach(cb => {
-    cb.addEventListener('change', function() {
-      state.checked[this.dataset.tid] = this.checked;
+    cb.addEventListener('change', async function(e) {
+      e.stopPropagation();
+      const tid = this.dataset.tid;
+      if (!sbTasks[tid]) return;
+      sbTasks[tid].checked = this.checked;
+      state.checked[tid] = this.checked;
       saveState(state);
-      buildSections();
+      await upsertTask(sbTasks[tid]);
+      buildSections(); updateAll();
+    });
+  });
+  // Click on task text → open detail modal
+  document.querySelectorAll('.task-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      if (e.target.matches('.task-cb')) return;
+      openTaskDetail(this.dataset.tid);
     });
   });
   document.querySelectorAll('.tsect-head').forEach(h => {
@@ -1096,16 +1415,18 @@ function bindEvents() {
     });
   });
   document.querySelectorAll('.add-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', async function() {
       const sid = this.dataset.sid;
       const input = document.querySelector(`.add-input[data-sid="${sid}"]`);
       const ent = document.querySelector(`.add-ent-sel[data-sid="${sid}"]`).value;
       const text = input.value.trim();
       if (!text) return;
-      if (!state.custom[sid]) state.custom[sid] = [];
-      state.custom[sid].push({ id:'cx_'+Date.now(), text, ent });
-      saveState(state);
+      const newTask = { id:'cx_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+        section_id:sid, text, ent, urgent:false, checked:false,
+        date:null, notes:'', contacts:[], reminder_at:null, is_static:false };
+      sbTasks[newTask.id] = newTask;
       input.value = '';
+      await upsertTask(newTask);
       buildSections();
     });
   });
@@ -1119,11 +1440,9 @@ function bindEvents() {
 }
 
 function updateAll() {
-  let total = 0, done = 0;
-  SECTIONS.forEach(s => {
-    const all = [...s.tasks, ...(state.custom[s.id] || [])];
-    total += all.length; done += all.filter(t => state.checked[t.id]).length;
-  });
+  const all = Object.values(sbTasks);
+  const total = all.length;
+  const done = all.filter(t => t.checked).length;
   const pct = total > 0 ? Math.round((done/total)*100) : 0;
   ['hd-total','ov-total'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=total; });
   ['hd-done','ov-done'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=done; });
@@ -1133,9 +1452,9 @@ function updateAll() {
   const sg=document.getElementById('sector-grid');
   if(sg) {
     sg.innerHTML = SECTIONS.map(s => {
-      const all=[...s.tasks,...(state.custom[s.id]||[])];
-      const dN=all.filter(t=>state.checked[t.id]).length;
-      const p=all.length?Math.round((dN/all.length)*100):0;
+      const sAll = getSectionTasks(s.id);
+      const dN = sAll.filter(t=>t.checked).length;
+      const p = sAll.length ? Math.round((dN/sAll.length)*100) : 0;
       return `<div class="sector-card">
         <div style="flex:1">
           <div class="sector-name">${s.name}</div>
@@ -1143,12 +1462,98 @@ function updateAll() {
         </div>
         <div class="sector-pct-wrap">
           <div class="sector-pct">${p}%</div>
-          <div class="sector-ct">${dN}/${all.length}</div>
+          <div class="sector-ct">${dN}/${sAll.length}</div>
         </div>
       </div>`;
     }).join('');
   }
 }
+
+/* ─── TASK DETAIL MODAL ─── */
+let _tdContacts = [];
+let _tdTaskId = null;
+
+function renderContactTags() {
+  const wrap = document.getElementById('td-contacts-wrap');
+  const inp = document.getElementById('td-contact-inp');
+  wrap.querySelectorAll('.td-contact-tag').forEach(t => t.remove());
+  _tdContacts.forEach((c, i) => {
+    const tag = document.createElement('span');
+    tag.className = 'td-contact-tag';
+    tag.innerHTML = `${c}<button data-ci="${i}">×</button>`;
+    tag.querySelector('button').addEventListener('click', e => {
+      _tdContacts.splice(Number(e.target.dataset.ci), 1);
+      renderContactTags();
+    });
+    wrap.insertBefore(tag, inp);
+  });
+}
+
+function openTaskDetail(tid) {
+  const t = sbTasks[tid];
+  if (!t) return;
+  _tdTaskId = tid;
+  _tdContacts = [...(t.contacts || [])];
+  document.getElementById('td-title').value = t.text;
+  document.getElementById('td-ent').value = t.ent || 'mt';
+  document.getElementById('td-date').value = t.date || '';
+  document.getElementById('td-notes').value = t.notes || '';
+  document.getElementById('td-reminder').value = t.reminder_at ? t.reminder_at.slice(0,16) : '';
+  renderContactTags();
+  // Hide delete for static (they can still edit metadata)
+  document.getElementById('td-del').style.display = t.is_static ? 'none' : '';
+  document.getElementById('td-overlay').hidden = false;
+}
+
+document.getElementById('td-contact-inp').addEventListener('keydown', function(e) {
+  if ((e.key === 'Enter' || e.key === ',') && this.value.trim()) {
+    e.preventDefault();
+    _tdContacts.push(this.value.trim());
+    this.value = '';
+    renderContactTags();
+  }
+});
+document.getElementById('td-contacts-wrap').addEventListener('click', () => {
+  document.getElementById('td-contact-inp').focus();
+});
+
+document.getElementById('td-cancel').addEventListener('click', () => {
+  document.getElementById('td-overlay').hidden = true;
+});
+document.getElementById('td-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('td-overlay'))
+    document.getElementById('td-overlay').hidden = true;
+});
+
+document.getElementById('td-save').addEventListener('click', async () => {
+  if (!_tdTaskId || !sbTasks[_tdTaskId]) return;
+  const t = sbTasks[_tdTaskId];
+  t.text = document.getElementById('td-title').value.trim() || t.text;
+  t.ent = document.getElementById('td-ent').value;
+  t.date = document.getElementById('td-date').value || null;
+  t.notes = document.getElementById('td-notes').value.trim();
+  t.contacts = [..._tdContacts];
+  const rem = document.getElementById('td-reminder').value;
+  t.reminder_at = rem ? rem + ':00' : null;
+  document.getElementById('td-overlay').hidden = true;
+  await upsertTask(t);
+  // Schedule browser notification if reminder set
+  if (t.reminder_at && 'Notification' in window) {
+    Notification.requestPermission().then(perm => {
+      if (perm === 'granted') {
+        const delay = new Date(t.reminder_at) - Date.now();
+        if (delay > 0) setTimeout(() => new Notification('✅ ' + t.text, { body: t.notes || '' }), delay);
+      }
+    });
+  }
+  buildSections(); renderWeekView(); renderCal();
+});
+
+document.getElementById('td-del').addEventListener('click', async () => {
+  if (!_tdTaskId) return;
+  document.getElementById('td-overlay').hidden = true;
+  await deleteTask(_tdTaskId);
+});
 
 /* ─── CALENDAR ─── */
 const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
@@ -1223,7 +1628,8 @@ function renderCal() {
       cell.addEventListener('click', () => {
         selectedDate = keyStr;
         renderCal();
-        renderSelDay(keyStr, dayNum, cellDate);
+        weekStart = getWeekStart(cellDate);
+        renderWeekView();
       });
     }
 
@@ -1231,81 +1637,416 @@ function renderCal() {
   }
 }
 
-const EV_ICONS = { mt:'✈️', mtp:'📋', lm:'🎵', Sortie:'🚀', Série:'📅', Admin:'📌' };
+/* ─── WEEK VIEW ENGINE ─── */
+const HOUR_PX = 64;
+const DAY_START = 6;  // first hour shown
+const DAY_END   = 23; // last hour shown
+const TOTAL_HOURS = DAY_END - DAY_START;
+const SNAP_MIN = 15;
 
-function renderSelDay(keyStr, dayNum, date) {
-  const dow = DAYS_FR[date.getDay() === 0 ? 6 : date.getDay() - 1];
-  const mon = MONTHS_FR[date.getMonth()];
-  document.getElementById('cal-sel-date').textContent = `${dayNum} ${mon}`;
-  document.getElementById('cal-sel-dow').textContent = dow;
+const ENT_COLORS = {
+  mt:  { bg:’#ede9fe’, border:’#7c3aed’, text:’#5b21b6’ },
+  mtp: { bg:’#e0f2fe’, border:’#0284c7’, text:’#075985’ },
+  lm:  { bg:’#fef9c3’, border:’#ca8a04’, text:’#854d0e’ },
+  default: { bg:’#f1f5f9’, border:’#64748b’, text:’#334155’ }
+};
 
-  // Show upcoming events: selected day + next 30 days that have events
-  const body = document.getElementById('cal-events-list');
+// User events in localStorage: { ‘uuid’: {id,title,date,startMin,durationMin,ent} }
+function loadUserEvs() { try { return JSON.parse(localStorage.getItem(‘machtwo_wk_evs’) || ‘{}’); } catch(e) { return {}; } }
+function saveUserEvs() { try { localStorage.setItem(‘machtwo_wk_evs’, JSON.stringify(userEvs)); } catch(e) {} }
+let userEvs = loadUserEvs();
+
+function genId() { return Math.random().toString(36).slice(2,10); }
+function dateKey(d) { return d.toISOString().slice(0,10); }
+
+function getWeekStart(date) {
+  const d = new Date(date); d.setHours(0,0,0,0);
+  const dow = d.getDay();
+  d.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1));
+  return d;
+}
+
+let weekStart = getWeekStart(new Date());
+
+function minToY(min) {
+  return ((min - DAY_START * 60) / 60) * HOUR_PX;
+}
+function yToMin(y) {
+  const raw = (y / HOUR_PX) * 60 + DAY_START * 60;
+  return Math.round(raw / SNAP_MIN) * SNAP_MIN;
+}
+function fmtMin(min) {
+  const h = Math.floor(min/60), m = min%60;
+  return `${h}:${m.toString().padStart(2,’0’)}`;
+}
+function fmtTimeInput(min) {
+  const h = Math.floor(min/60), m = min%60;
+  return `${h.toString().padStart(2,’0’)}:${m.toString().padStart(2,’0’)}`;
+}
+function parseTimeInput(s) {
+  const [h,m] = s.split(‘:’).map(Number);
+  return h*60+(m||0);
+}
+
+// Merge CAL_EVENTS (static) + userEvs + tasks with date for a given date key
+function getEventsForDate(dk) {
+  const staticEvs = (CAL_EVENTS[dk] || []).map(ev => ({
+    id: ‘static_’ + dk + ‘_’ + ev.title,
+    title: ev.title,
+    sub: ev.sub || ‘’,
+    ent: ev.ent || ‘mt’,
+    startMin: ev.startMin != null ? ev.startMin : 600,
+    durationMin: ev.durationMin != null ? ev.durationMin : 60,
+    _static: true
+  }));
+  const userDayEvs = Object.values(userEvs).filter(e => e.date === dk);
+  // Tasks with a date
+  const taskEvs = Object.values(sbTasks)
+    .filter(t => t.date === dk && !t.checked)
+    .map(t => ({
+      id: ‘task_’ + t.id,
+      title: ‘☑ ‘ + t.text,
+      sub: t.notes ? t.notes.slice(0,40) : ‘’,
+      ent: t.ent || ‘mt’,
+      startMin: 480, // 8h00 by default
+      durationMin: 30,
+      _task: true, _taskId: t.id
+    }));
+  return [...staticEvs, ...userDayEvs, ...taskEvs];
+}
+
+function renderWeekView() {
   const today = new Date(); today.setHours(0,0,0,0);
-  
-  // Collect dates with events starting from selected date
-  const selDateObj = new Date(date); selDateObj.setHours(0,0,0,0);
-  const groups = [];
-  for (let i = 0; i <= 90; i++) {
-    const d = new Date(selDateObj); d.setDate(d.getDate() + i);
-    const k = d.toISOString().slice(0,10);
-    if (CAL_EVENTS[k] && CAL_EVENTS[k].length > 0) {
-      groups.push({ date: d, key: k, evs: CAL_EVENTS[k] });
-    }
-    if (groups.length >= 12) break;
-  }
+  const days = Array.from({length:7}, (_, i) => {
+    const d = new Date(weekStart); d.setDate(d.getDate() + i); return d;
+  });
 
-  if (groups.length === 0) {
-    body.innerHTML = '<div class="cal-no-event">Aucun événement à venir</div>';
-    return;
-  }
+  // Nav label
+  const s = days[0], e = days[6];
+  const sameMonth = s.getMonth() === e.getMonth();
+  const label = sameMonth
+    ? `${s.getDate()}–${e.getDate()} ${MONTHS_FR[s.getMonth()]} ${s.getFullYear()}`
+    : `${s.getDate()} ${MONTHS_FR[s.getMonth()]} – ${e.getDate()} ${MONTHS_FR[e.getMonth()]} ${e.getFullYear()}`;
+  document.getElementById(‘week-nav-label’).textContent = label;
 
-  body.innerHTML = groups.map(g => {
-    const isToday = g.date.getTime() === today.getTime();
-    const isSel = g.key === keyStr;
-    const dayN = g.date.getDate();
-    const monN = MONTHS_FR[g.date.getMonth()];
-    const dowN = DAYS_FR[g.date.getDay() === 0 ? 6 : g.date.getDay() - 1];
-    const label = isToday ? `Aujourd'hui · ${dowN} ${dayN} ${monN}` : `${dowN} ${dayN} ${monN}`;
-
-    const rows = g.evs.map(ev => {
-      const col = ENT_COL[ev.ent] || 'var(--accent)';
-      const tcls = ENT_TAG_CLASS[ev.ent] || '';
-      const tagCls = ev.tag === 'Sortie' ? 'urgent' : (tcls || '');
-      const icon = EV_ICONS[ev.tag] || EV_ICONS[ev.ent] || '📌';
-      return `<div class="cal-ev-item">
-        <div class="cal-ev-icon" style="background:${col}20">${icon}</div>
-        <div class="cal-ev-body">
-          <div class="cal-ev-title">${ev.title}</div>
-          ${ev.sub ? `<div class="cal-ev-sub">${ev.sub}</div>` : ''}
-          <span class="cal-ev-tag ${tagCls}">${ev.tag}</span>
-        </div>
-      </div>`;
-    }).join('');
-
-    return `<div class="cal-date-group">
-      <div class="cal-date-divider">
-        <div class="cal-date-divider-line"></div>
-        <div class="cal-date-divider-label">${label}</div>
-        <div class="cal-date-divider-line"></div>
-      </div>
-      ${rows}
+  // Header row
+  const head = document.getElementById(‘week-head-row’);
+  head.innerHTML = ‘<div class="week-head-gutter"></div>’ + days.map((d,i) => {
+    const isToday = d.getTime() === today.getTime();
+    const dow = [‘Lun’,’Mar’,’Mer’,’Jeu’,’Ven’,’Sam’,’Dim’][i];
+    return `<div class="week-head-day${isToday?’ today’:’’}" data-col="${i}">
+      <span class="wh-num">${d.getDate()}</span>${dow}
     </div>`;
-  }).join('');
+  }).join(‘’);
+
+  // Grid
+  const grid = document.getElementById(‘week-grid’);
+  grid.innerHTML = ‘’;
+  grid.style.height = (TOTAL_HOURS * HOUR_PX) + ‘px’;
+
+  // Time gutter
+  const gutter = document.createElement(‘div’);
+  gutter.className = ‘week-gutter’;
+  for (let h = DAY_START; h < DAY_END; h++) {
+    const lbl = document.createElement(‘div’);
+    lbl.className = ‘week-hour-label’;
+    lbl.textContent = `${h}:00`;
+    gutter.appendChild(lbl);
+  }
+  grid.appendChild(gutter);
+
+  // Day columns
+  days.forEach((d, colIdx) => {
+    const col = document.createElement(‘div’);
+    col.className = ‘week-col’ + (d.getTime() === today.getTime() ? ‘ today-col’ : ‘’);
+    col.style.position = ‘relative’;
+
+    // Hour slots (click-to-create zones)
+    for (let h = DAY_START; h < DAY_END; h++) {
+      const slot = document.createElement(‘div’);
+      slot.className = ‘week-slot’;
+      slot.dataset.col = colIdx;
+      slot.dataset.hour = h;
+      col.appendChild(slot);
+    }
+
+    // Events
+    const dk = dateKey(d);
+    getEventsForDate(dk).forEach(ev => {
+      const startMin = Math.max(ev.startMin, DAY_START * 60);
+      const endMin   = Math.min(ev.startMin + ev.durationMin, DAY_END * 60);
+      if (endMin <= DAY_START * 60) return;
+      const top    = minToY(startMin);
+      const height = Math.max(((endMin - startMin) / 60) * HOUR_PX, 20);
+      const colors = ENT_COLORS[ev.ent] || ENT_COLORS.default;
+
+      const el = document.createElement(‘div’);
+      el.className = ‘week-ev’;
+      el.dataset.evid = ev.id;
+      el.dataset.date = dk;
+      el.style.cssText = `top:${top}px;height:${height}px;background:${colors.bg};border-left-color:${colors.border};color:${colors.text}`;
+      el.innerHTML = `<div class="week-ev-title">${ev.title}</div>
+        <div class="week-ev-time">${fmtMin(ev.startMin)}–${fmtMin(ev.startMin+ev.durationMin)}</div>
+        <div class="week-ev-resize"></div>`;
+
+      // Click to edit
+      el.addEventListener(‘click’, e => {
+        e.stopPropagation();
+        if (ev._task) { openTaskDetail(ev._taskId); return; }
+        if (ev._static) return;
+        openModal(ev.id);
+      });
+
+      // No drag on task events or static
+      if (ev._task || ev._static) {
+        el.querySelector(‘.week-ev-resize’).style.display = ‘none’;
+        return col.appendChild(el), undefined;
+      }
+
+      // Drag to move
+      el.addEventListener(‘mousedown’, e => {
+        if (e.target.classList.contains(‘week-ev-resize’)) return;
+        e.preventDefault();
+        startDrag(e, ev, d, colIdx, ‘move’);
+      });
+
+      // Resize
+      el.querySelector(‘.week-ev-resize’).addEventListener(‘mousedown’, e => {
+        e.preventDefault(); e.stopPropagation();
+        startDrag(e, ev, d, colIdx, ‘resize’);
+      });
+
+      col.appendChild(el);
+    });
+
+    // Click on slot to create new event
+    col.addEventListener(‘mousedown’, e => {
+      if (e.target.classList.contains(‘week-ev’) || e.target.closest(‘.week-ev’)) return;
+      startCreate(e, d, col);
+    });
+
+    grid.appendChild(col);
+  });
+
+  // Current time line
+  const nowD = new Date();
+  const nowMin = nowD.getHours()*60 + nowD.getMinutes();
+  if (nowMin >= DAY_START*60 && nowMin < DAY_END*60) {
+    const todayIdx = days.findIndex(d => d.getTime() === today.getTime());
+    if (todayIdx >= 0) {
+      const todayCol = grid.querySelectorAll(‘.week-col’)[todayIdx];
+      if (todayCol) {
+        const line = document.createElement(‘div’);
+        line.className = ‘week-now-line’;
+        line.style.top = minToY(nowMin) + ‘px’;
+        line.innerHTML = ‘<div class="week-now-dot"></div>’;
+        todayCol.appendChild(line);
+      }
+    }
+  }
+
+  // Scroll to ~8:00 on first render
+  const scrollEl = document.getElementById(‘week-scroll’);
+  if (scrollEl && scrollEl.dataset.initialized !== ‘1’) {
+    scrollEl.scrollTop = minToY(8*60);
+    scrollEl.dataset.initialized = ‘1’;
+  }
 }
 
-function resetAgenda() {
-  document.getElementById('cal-sel-date').textContent = MONTHS_FR[calMonth] + ' ' + calYear;
-  document.getElementById('cal-sel-dow').textContent = '';
-  document.getElementById('cal-events-list').innerHTML = '<div class="cal-no-event">Cliquez une date pour voir l’agenda</div>';
+/* ─── DRAG & DROP ─── */
+let drag = null;
+
+function startDrag(e, ev, date, colIdx, type) {
+  if (ev._static) return;
+  const colEls = document.getElementById(‘week-grid’).querySelectorAll(‘.week-col’);
+  const evEl = document.getElementById(‘week-grid’).querySelector(`[data-evid="${ev.id}"]`);
+  if (!evEl) return;
+  const colRect = colEls[colIdx].getBoundingClientRect();
+  drag = {
+    type, ev: JSON.parse(JSON.stringify(ev)),
+    colIdx, date, colEls,
+    offsetY: e.clientY - evEl.getBoundingClientRect().top,
+    origEl: evEl
+  };
+  evEl.classList.add(‘dragging’);
 }
-document.getElementById('cal-prev').addEventListener('click', () => {
-  calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
-  selectedDate = null; renderCal(); resetAgenda();
+
+document.addEventListener(‘mousemove’, e => {
+  if (!drag) return;
+  const colEls = drag.colEls;
+  // Find which column mouse is over
+  let newColIdx = drag.colIdx;
+  for (let i = 0; i < colEls.length; i++) {
+    const r = colEls[i].getBoundingClientRect();
+    if (e.clientX >= r.left && e.clientX <= r.right) { newColIdx = i; break; }
+  }
+  const colRect = colEls[newColIdx].getBoundingClientRect();
+  const scrollEl = document.getElementById(‘week-scroll’);
+  const scrollTop = scrollEl.scrollTop;
+
+  if (drag.type === ‘move’) {
+    const relY = e.clientY - colRect.top + scrollTop - drag.offsetY;
+    const snapped = Math.max(DAY_START*60, Math.min(yToMin(relY), (DAY_END-1)*60));
+    drag.newStartMin = snapped;
+    drag.newColIdx = newColIdx;
+    // Visual feedback
+    drag.origEl.style.top = minToY(snapped) + ‘px’;
+    // Move to new column visually if needed
+    if (newColIdx !== drag.colIdx) {
+      colEls[newColIdx].appendChild(drag.origEl);
+      drag.colIdx = newColIdx;
+    }
+  } else {
+    // resize
+    const colRect2 = colEls[drag.colIdx].getBoundingClientRect();
+    const relY = e.clientY - colRect2.top + scrollTop;
+    const endSnapped = Math.max(yToMin(relY), drag.ev.startMin + SNAP_MIN);
+    const dur = Math.min(endSnapped - drag.ev.startMin, (DAY_END - drag.ev.startMin/60)*60);
+    drag.newDuration = dur;
+    drag.origEl.style.height = Math.max((dur/60)*HOUR_PX, 20) + ‘px’;
+    drag.origEl.querySelector(‘.week-ev-time’).textContent =
+      `${fmtMin(drag.ev.startMin)}–${fmtMin(drag.ev.startMin+dur)}`;
+  }
 });
-document.getElementById('cal-next').addEventListener('click', () => {
+
+document.addEventListener(‘mouseup’, () => {
+  if (!drag) return;
+  drag.origEl.classList.remove(‘dragging’);
+  if (drag.type === ‘move’ && drag.newStartMin != null) {
+    const days = Array.from({length:7}, (_, i) => { const d = new Date(weekStart); d.setDate(d.getDate()+i); return d; });
+    const newDate = dateKey(days[drag.colIdx]);
+    userEvs[drag.ev.id].date = newDate;
+    userEvs[drag.ev.id].startMin = drag.newStartMin;
+    saveUserEvs();
+  } else if (drag.type === ‘resize’ && drag.newDuration != null) {
+    userEvs[drag.ev.id].durationMin = drag.newDuration;
+    saveUserEvs();
+  }
+  drag = null;
+  renderWeekView();
+  renderCal();
+});
+
+/* ─── EVENT CREATION (click-drag on empty area) ─── */
+let creating = null;
+
+function startCreate(e, date, colEl) {
+  const scrollEl = document.getElementById(‘week-scroll’);
+  const rect = colEl.getBoundingClientRect();
+  const relY = e.clientY - rect.top + scrollEl.scrollTop;
+  const startMin = Math.max(yToMin(relY), DAY_START*60);
+  const ghost = document.createElement(‘div’);
+  ghost.className = ‘week-ghost’;
+  ghost.style.top = minToY(startMin) + ‘px’;
+  ghost.style.height = HOUR_PX + ‘px’;
+  colEl.appendChild(ghost);
+  creating = { date, colEl, ghost, startMin, startY: e.clientY };
+}
+
+document.addEventListener(‘mousemove’, e => {
+  if (!creating) return;
+  const scrollEl = document.getElementById(‘week-scroll’);
+  const rect = creating.colEl.getBoundingClientRect();
+  const relY = e.clientY - rect.top + scrollEl.scrollTop;
+  const endMin = Math.max(yToMin(relY), creating.startMin + SNAP_MIN);
+  creating.endMin = endMin;
+  creating.ghost.style.height = Math.max(((endMin - creating.startMin)/60)*HOUR_PX, 20) + ‘px’;
+}, {capture: false});
+
+document.addEventListener(‘mouseup’, e => {
+  if (!creating) return;
+  const endMin = creating.endMin || creating.startMin + 60;
+  creating.ghost.remove();
+  // Open modal pre-filled
+  document.getElementById(‘ev-modal-title’).textContent = ‘Nouvel événement’;
+  document.getElementById(‘ev-inp-title’).value = ‘’;
+  document.getElementById(‘ev-inp-date’).value = dateKey(creating.date);
+  document.getElementById(‘ev-inp-start’).value = fmtTimeInput(creating.startMin);
+  document.getElementById(‘ev-inp-end’).value = fmtTimeInput(endMin);
+  document.getElementById(‘ev-inp-ent’).value = ‘mt’;
+  document.getElementById(‘ev-modal-del’).hidden = true;
+  document.getElementById(‘ev-modal-overlay’).dataset.editId = ‘’;
+  document.getElementById(‘ev-modal-overlay’).hidden = false;
+  creating = null;
+  setTimeout(() => document.getElementById(‘ev-inp-title’).focus(), 50);
+}, {capture: false});
+
+/* ─── EVENT MODAL ─── */
+function openModal(evId) {
+  const ev = userEvs[evId];
+  if (!ev) return;
+  document.getElementById(‘ev-modal-title’).textContent = ‘Modifier l’événement’;
+  document.getElementById(‘ev-inp-title’).value = ev.title;
+  document.getElementById(‘ev-inp-date’).value = ev.date;
+  document.getElementById(‘ev-inp-start’).value = fmtTimeInput(ev.startMin);
+  document.getElementById(‘ev-inp-end’).value = fmtTimeInput(ev.startMin + ev.durationMin);
+  document.getElementById(‘ev-inp-ent’).value = ev.ent;
+  document.getElementById(‘ev-modal-del’).hidden = false;
+  document.getElementById(‘ev-modal-overlay’).dataset.editId = evId;
+  document.getElementById(‘ev-modal-overlay’).hidden = false;
+}
+
+document.getElementById(‘ev-modal-cancel’).addEventListener(‘click’, () => {
+  document.getElementById(‘ev-modal-overlay’).hidden = true;
+});
+document.getElementById(‘ev-modal-overlay’).addEventListener(‘click’, e => {
+  if (e.target === document.getElementById(‘ev-modal-overlay’))
+    document.getElementById(‘ev-modal-overlay’).hidden = true;
+});
+document.getElementById(‘ev-modal-save’).addEventListener(‘click’, () => {
+  const title = document.getElementById(‘ev-inp-title’).value.trim();
+  if (!title) { document.getElementById(‘ev-inp-title’).focus(); return; }
+  const date  = document.getElementById(‘ev-inp-date’).value;
+  const start = parseTimeInput(document.getElementById(‘ev-inp-start’).value);
+  const end   = parseTimeInput(document.getElementById(‘ev-inp-end’).value);
+  const ent   = document.getElementById(‘ev-inp-ent’).value;
+  const dur   = Math.max(end - start, SNAP_MIN);
+  const editId = document.getElementById(‘ev-modal-overlay’).dataset.editId;
+  const id = editId || genId();
+  userEvs[id] = { id, title, date, startMin: start, durationMin: dur, ent };
+  saveUserEvs();
+  document.getElementById(‘ev-modal-overlay’).hidden = true;
+  renderWeekView(); renderCal();
+});
+document.getElementById(‘ev-modal-del’).addEventListener(‘click’, () => {
+  const editId = document.getElementById(‘ev-modal-overlay’).dataset.editId;
+  if (editId && userEvs[editId]) {
+    delete userEvs[editId];
+    saveUserEvs();
+  }
+  document.getElementById(‘ev-modal-overlay’).hidden = true;
+  renderWeekView(); renderCal();
+});
+document.getElementById(‘week-add-btn’).addEventListener(‘click’, () => {
+  const today = new Date();
+  document.getElementById(‘ev-modal-title’).textContent = ‘Nouvel événement’;
+  document.getElementById(‘ev-inp-title’).value = ‘’;
+  document.getElementById(‘ev-inp-date’).value = dateKey(today);
+  document.getElementById(‘ev-inp-start’).value = ‘10:00’;
+  document.getElementById(‘ev-inp-end’).value = ‘11:00’;
+  document.getElementById(‘ev-inp-ent’).value = ‘mt’;
+  document.getElementById(‘ev-modal-del’).hidden = true;
+  document.getElementById(‘ev-modal-overlay’).dataset.editId = ‘’;
+  document.getElementById(‘ev-modal-overlay’).hidden = false;
+  setTimeout(() => document.getElementById(‘ev-inp-title’).focus(), 50);
+});
+document.getElementById(‘week-prev’).addEventListener(‘click’, () => {
+  weekStart.setDate(weekStart.getDate() - 7); renderWeekView();
+});
+document.getElementById(‘week-next’).addEventListener(‘click’, () => {
+  weekStart.setDate(weekStart.getDate() + 7); renderWeekView();
+});
+document.getElementById(‘week-today-btn’).addEventListener(‘click’, () => {
+  weekStart = getWeekStart(new Date()); renderWeekView();
+});
+
+document.getElementById(‘cal-prev’).addEventListener(‘click’, () => {
+  calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
+  selectedDate = null; renderCal();
+});
+document.getElementById(‘cal-next’).addEventListener(‘click’, () => {
   calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; }
-  selectedDate = null; renderCal(); resetAgenda();
+  selectedDate = null; renderCal();
 });
 
 /* ─── TABS ─── */
@@ -1329,7 +2070,10 @@ try { initAuth(); } catch(e) {
   const el = document.getElementById('js-error-bar');
   if (el) { el.textContent = '⚠️ initAuth crash: ' + e.message; el.style.display = 'block'; }
 }
+// Init tasks: try Supabase, fall back gracefully
+initStaticTasks();
 buildSections();
+loadSbTasks().then(() => subscribeTasksRT()).catch(e => console.warn('[TASKS] init error', e));
 renderCal();
 // Auto-select today if in current month
 const todayKey = new Date().toISOString().slice(0,10);
@@ -1337,7 +2081,7 @@ if (todayKey.startsWith(`${calYear}-${String(calMonth+1).padStart(2,'0')}`)) {
   const todayDate = new Date();
   selectedDate = todayKey;
   renderCal();
-  renderSelDay(todayKey, todayDate.getDate(), todayDate);
+  renderWeekView();
 }
 </script>
 </body></html>
