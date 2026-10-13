@@ -944,18 +944,28 @@ async function handleLogin() {
   if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { setErr('Email invalide.'); return; }
   if (!pass) { setErr('Mot de passe requis.'); return; }
   setErr('Connexion…');
+  console.log('[AUTH] handleLogin start', email);
   try {
-    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-    if (error) { setErr('Email ou mot de passe incorrect.'); return; }
+    // timeout 15s
+    const loginResult = await Promise.race([
+      sb.auth.signInWithPassword({ email, password: pass }),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout Supabase (15s) — vérifie ta connexion ou réessaie.')), 15000))
+    ]);
+    console.log('[AUTH] signInWithPassword result', loginResult);
+    const { data, error } = loginResult;
+    if (error) { console.error('[AUTH] signIn error', error); setErr('Email ou mot de passe incorrect. (' + error.message + ')'); return; }
+    console.log('[AUTH] signed in, user:', data.user.id, '— checking validated…');
     const validated = await checkValidated(data.user.id);
+    console.log('[AUTH] validated =', validated);
     if (!validated) {
       await sb.auth.signOut();
-      setErr("Ton compte est en attente de validation par l'admin. On te prévient dès que c'est bon 👍");
+      setErr("Ton compte est en attente de validation par l’admin. On te prévient dès que c’est bon 👍");
       return;
     }
     showUser(email);
     document.getElementById('login-gate').hidden = true;
-  } catch(e) { setErr('Erreur : ' + e.message); }
+    console.log('[AUTH] login success');
+  } catch(e) { console.error('[AUTH] catch', e); setErr('Erreur : ' + e.message); }
 }
 
 async function handleRegister() {
