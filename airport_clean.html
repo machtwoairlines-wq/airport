@@ -566,7 +566,7 @@ body:has(#login:target) #register { display: none; }
       <input class="login-input" type="email" id="login-email" placeholder="vous@machtwomusicgroup.com" autocomplete="email">
       <label class="login-label" for="login-pass">Mot de passe</label>
       <input class="login-input" type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
-      <button type="button" class="login-btn" id="login-btn">Se connecter</button>
+      <button type="button" class="login-btn" id="login-btn" onclick="handleLogin()">Se connecter</button>
       <a href="#register" class="login-link" id="go-register">Pas encore de compte ? Créer un accès</a>
     </div>
 
@@ -588,7 +588,7 @@ body:has(#login:target) #register { display: none; }
           <svg id="eye-reg-pass2-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
-      <button type="button" class="login-btn" id="reg-btn">Créer mon accès</button>
+      <button type="button" class="login-btn" id="reg-btn" onclick="handleRegister()">Créer mon accès</button>
       <a href="#login" class="login-link" id="go-login">Déjà un compte ? Se connecter</a>
     </div>
 
@@ -937,18 +937,14 @@ async function checkValidated(userId) {
   } catch(e) { return false; }
 }
 
-async function initAuth() {
-  const gate = document.getElementById('login-gate');
-  document.getElementById('go-register').addEventListener('click', () => showForm('register'));
-  document.getElementById('go-login').addEventListener('click', () => showForm('login'));
-
-  // LOGIN
-  document.getElementById('login-btn').addEventListener('click', async () => {
-    const email = document.getElementById('login-email').value.trim().toLowerCase();
-    const pass  = document.getElementById('login-pass').value;
-    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { setErr('Email invalide.'); return; }
-    if (!pass) { setErr('Mot de passe requis.'); return; }
-    setErr('Connexion…');
+/* ─── GLOBAL AUTH HANDLERS (onclick-safe) ─── */
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('login-pass').value;
+  if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { setErr('Email invalide.'); return; }
+  if (!pass) { setErr('Mot de passe requis.'); return; }
+  setErr('Connexion…');
+  try {
     const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
     if (error) { setErr('Email ou mot de passe incorrect.'); return; }
     const validated = await checkValidated(data.user.id);
@@ -958,42 +954,46 @@ async function initAuth() {
       return;
     }
     showUser(email);
-    gate.hidden = true;
-  });
+    document.getElementById('login-gate').hidden = true;
+  } catch(e) { setErr('Erreur : ' + e.message); }
+}
 
-  // REGISTER
-  document.getElementById('reg-btn').addEventListener('click', async () => {
-    try {
-      const email = document.getElementById('reg-email').value.trim().toLowerCase();
-      const pass  = document.getElementById('reg-pass').value;
-      const pass2 = document.getElementById('reg-pass2').value;
-      if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { setErr('Email invalide.'); return; }
-      if (pass.length < 8) { setErr('Mot de passe trop court (8 caractères minimum).'); return; }
-      if (pass !== pass2) { setErr('Les mots de passe ne correspondent pas.'); return; }
-      setErr('Création du compte…');
-      const { data, error } = await sb.auth.signUp({ email, password: pass });
-      if (error) { setErr('Erreur : ' + error.message); return; }
-      setOk("Demande envoyée ✅ — L'admin validera ton accès très vite.");
-    } catch(e) { setErr('Erreur : ' + e.message); }
-  });
+async function handleRegister() {
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass2').value;
+  if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { setErr('Email invalide.'); return; }
+  if (pass.length < 8) { setErr('Mot de passe trop court (8 caractères minimum).'); return; }
+  if (pass !== pass2) { setErr('Les mots de passe ne correspondent pas.'); return; }
+  setErr('Création du compte…');
+  try {
+    const { data, error } = await sb.auth.signUp({ email, password: pass });
+    if (error) { setErr('Erreur : ' + error.message); return; }
+    setOk("Demande envoyée ✅ — L'admin validera ton accès très vite.");
+  } catch(e) { setErr('Erreur : ' + e.message); }
+}
 
-  // Enter key
+async function initAuth() {
+  // Enter key shortcuts
   ['login-email','login-pass'].forEach(id => {
-    document.getElementById(id).addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('login-btn').click(); });
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', e => { if (e.key==='Enter') handleLogin(); });
   });
   ['reg-email','reg-pass','reg-pass2'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('reg-btn').click(); });
+    if (el) el.addEventListener('keydown', e => { if (e.key==='Enter') handleRegister(); });
   });
 
   // Check existing session
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    const validated = await checkValidated(session.user.id);
-    if (validated) { showUser(session.user.email); gate.hidden = true; return; }
-    await sb.auth.signOut();
-  }
-  gate.hidden = false;
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      const validated = await checkValidated(session.user.id);
+      if (validated) { showUser(session.user.email); document.getElementById('login-gate').hidden = true; return; }
+      await sb.auth.signOut();
+    }
+  } catch(e) { /* network issue — show gate */ }
+  document.getElementById('login-gate').hidden = false;
   showForm('login');
 }
 
