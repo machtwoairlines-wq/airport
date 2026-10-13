@@ -569,8 +569,6 @@ body:has(#login:target) #register { display: none; }
     <div id="register" class="auth-form">
       <label class="login-label" for="reg-email">Adresse email</label>
       <input class="login-input" type="email" id="reg-email" name="username" placeholder="vous@machtwomusicgroup.com" autocomplete="email">
-      <label class="login-label" for="reg-team-key">Clef d'équipe</label>
-      <input class="login-input" type="password" id="reg-team-key" placeholder="Fournie par l'admin" autocomplete="off">
       <label class="login-label" for="reg-pass">Choisir un mot de passe</label>
       <div style="position:relative;margin-bottom:14px;">
         <input class="login-input" type="password" id="reg-pass" name="password" placeholder="8 caractères minimum" autocomplete="new-password" style="margin-bottom:0;padding-right:44px;width:100%;">
@@ -743,6 +741,7 @@ body:has(#login:target) #register { display: none; }
 
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 <script>
 /* ─── DATA ─── */
 const SECTIONS = [
@@ -882,51 +881,11 @@ function loadState() {
 function saveState(s) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch(e) {} }
 let state = loadState();
 
-/* ─── AUTH ─── */
-const ADMIN_EMAIL = 'lamadone.mp3@pm.me';
-const ACCOUNTS_KEY = 'machtwo_accounts_v1';
-
-/* ─── TEAM KEY ─── */
-const TEAM_KEY_STORAGE = 'machtwo_team_key_v1';
-const TEAM_KEY_DEFAULT = 'mactwhoverslesetoiles';
-function getTeamKey() {
-  try { return localStorage.getItem(TEAM_KEY_STORAGE) || TEAM_KEY_DEFAULT; } catch(e) { return TEAM_KEY_DEFAULT; }
-}
-function setTeamKey(k) {
-  try { localStorage.setItem(TEAM_KEY_STORAGE, k); } catch(e) {}
-}
-
-function loadAccounts() {
-  try { const r = localStorage.getItem(ACCOUNTS_KEY); return r ? JSON.parse(r) : {}; }
-  catch(e) { return {}; }
-}
-function saveAccounts(a) { try { localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(a)); } catch(e) {} }
-
-// Simple hash (not cryptographic — no server = no real security; keeps passwords off plaintext)
-async function hashPass(pass) {
-  try {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass + 'machtwo_salt_v1'));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-  } catch(e) { return btoa(pass + 'machtwo_salt_v1'); }
-}
-
-function loadSession() {
-  try { return localStorage.getItem(USER_KEY) || ''; } catch(e) { return ''; }
-}
-function saveSession(email) { try { localStorage.setItem(USER_KEY, email); } catch(e) {} }
-function clearSession() { try { localStorage.removeItem(USER_KEY); } catch(e) {} }
-
-const ADMIN_EMAIL = 'lamadone.mp3@pm.me';
-function showUser(email) {
-  const name = email.split('@')[0];
-  const initials = name.slice(0,2).toUpperCase();
-  document.getElementById('user-avatar').textContent = initials;
-  document.getElementById('user-label').textContent = email;
-  // Show admin key button only for admin
-  const adminBtn = document.getElementById('admin-key-btn');
-  if (adminBtn) adminBtn.style.display = (email === ADMIN_EMAIL) ? '' : 'none';
-}
-
+/* ─── SUPABASE AUTH ─── */
+const SUPABASE_URL  = 'https://hfaiuxkjzjcrnsejzger.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmYWl1eGtqempjcm5zZWp6Z2VyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTUxOTksImV4cCI6MjEwNzEzMTE5OX0.EGgdaD9M3b8kTXJOxK2JKS-13PfIkWlXCe3_HxR-obo';
+const ADMIN_EMAIL   = 'lamadone.mp3@pm.me';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 function setErr(msg) {
   document.getElementById('login-err').textContent = msg;
@@ -937,23 +896,34 @@ function setOk(msg, html) {
   if (html) { el.innerHTML = html; } else { el.textContent = msg; }
   document.getElementById('login-err').textContent = '';
 }
-
 function showForm(mode) {
   document.getElementById('login-sub-text').textContent = mode === 'login'
     ? 'Connectez-vous pour accéder au dashboard'
-    : 'Créez votre accès';
+    : "Créez votre accès — l'admin validera ton compte";
   document.getElementById('login-err').textContent = '';
   document.getElementById('login-ok').innerHTML = '';
 }
+function showUser(email) {
+  const name = email.split('@')[0];
+  const initials = name.slice(0,2).toUpperCase();
+  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('user-label').textContent = email;
+  const adminBtn = document.getElementById('admin-key-btn');
+  if (adminBtn) adminBtn.style.display = (email === ADMIN_EMAIL) ? '' : 'none';
+}
+async function checkValidated(userId) {
+  try {
+    const { data } = await sb.from('profiles').select('validated').eq('id', userId).single();
+    return data && data.validated === true;
+  } catch(e) { return false; }
+}
 
-function initAuth() {
+async function initAuth() {
   const gate = document.getElementById('login-gate');
-
-  // Always attach listeners (even if session exists, needed after logout)
   document.getElementById('go-register').addEventListener('click', () => showForm('register'));
   document.getElementById('go-login').addEventListener('click', () => showForm('login'));
 
-  // EYE TOGGLE — show/hide password
+  // EYE TOGGLE
   function toggleEye(inputId, iconId) {
     const inp = document.getElementById(inputId);
     const ico = document.getElementById(iconId);
@@ -966,7 +936,6 @@ function initAuth() {
       if (ico) ico.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
     }
   }
-  // Direct listeners on eye buttons (event delegation fails in some contexts)
   const eyeBtn1 = document.getElementById('eye-reg-pass');
   const eyeBtn2 = document.getElementById('eye-reg-pass2');
   if (eyeBtn1) eyeBtn1.addEventListener('click', function(e) { e.stopPropagation(); toggleEye('reg-pass', 'eye-reg-pass-icon'); });
@@ -975,15 +944,18 @@ function initAuth() {
   // LOGIN
   document.getElementById('login-btn').addEventListener('click', async () => {
     const email = document.getElementById('login-email').value.trim().toLowerCase();
-    const pass = document.getElementById('login-pass').value;
+    const pass  = document.getElementById('login-pass').value;
     if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { setErr('Email invalide.'); return; }
     if (!pass) { setErr('Mot de passe requis.'); return; }
-    const accounts = loadAccounts();
-    if (!accounts[email]) { setErr('Aucun compte avec cet email. Créez un accès d\'abord.'); return; }
-    const hashed = await hashPass(pass);
-    const storedHash = typeof accounts[email] === 'object' ? accounts[email].hash : accounts[email];
-    if (storedHash !== hashed) { setErr('Mot de passe incorrect.'); return; }
-    saveSession(email);
+    setErr('Connexion…');
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) { setErr('Email ou mot de passe incorrect.'); return; }
+    const validated = await checkValidated(data.user.id);
+    if (!validated) {
+      await sb.auth.signOut();
+      setErr("Ton compte est en attente de validation par l'admin. On te prévient dès que c'est bon 👍");
+      return;
+    }
     showUser(email);
     gate.hidden = true;
   });
@@ -994,49 +966,42 @@ function initAuth() {
       const email = document.getElementById('reg-email').value.trim().toLowerCase();
       const pass  = document.getElementById('reg-pass').value;
       const pass2 = document.getElementById('reg-pass2').value;
-      const teamKey = document.getElementById('reg-team-key').value;
       if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { setErr('Email invalide.'); return; }
-      if (!teamKey) { setErr('Clef d\'équipe requise.'); return; }
-      if (teamKey !== getTeamKey()) { setErr('Clef d\'équipe incorrecte. Demande-la à l\'admin.'); return; }
       if (pass.length < 8) { setErr('Mot de passe trop court (8 caractères minimum).'); return; }
       if (pass !== pass2) { setErr('Les mots de passe ne correspondent pas.'); return; }
-      const accounts = loadAccounts();
-      if (accounts[email]) { setErr('Un compte existe déjà avec cet email.'); return; }
-      const hashed = await hashPass(pass);
-      accounts[email] = { hash: hashed };
-      saveAccounts(accounts);
-      setOk('Compte créé ✅ — Tu peux maintenant te connecter.');
-    } catch(e) {
-      setErr('Erreur : ' + e.message);
-    }
+      setErr('Création du compte…');
+      const { data, error } = await sb.auth.signUp({ email, password: pass });
+      if (error) { setErr('Erreur : ' + error.message); return; }
+      setOk("Demande envoyée ✅ — L'admin validera ton accès très vite.");
+    } catch(e) { setErr('Erreur : ' + e.message); }
   });
 
   // Enter key
   ['login-email','login-pass'].forEach(id => {
     document.getElementById(id).addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('login-btn').click(); });
   });
-  ['reg-email','reg-team-key','reg-pass','reg-pass2'].forEach(id => {
-    document.getElementById(id).addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('reg-btn').click(); });
+  ['reg-email','reg-pass','reg-pass2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('reg-btn').click(); });
   });
 
-  const stored = loadSession();
-  if (stored) { showUser(stored); gate.hidden = true; return; }
-
+  // Check existing session
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    const validated = await checkValidated(session.user.id);
+    if (validated) { showUser(session.user.email); gate.hidden = true; return; }
+    await sb.auth.signOut();
+  }
   gate.hidden = false;
   showForm('login');
 }
 
 document.getElementById('admin-key-btn').addEventListener('click', () => {
-  const current = getTeamKey();
-  const newKey = prompt(`Clef d'équipe actuelle : "${current}"\n\nNouvelle clef (laisse vide pour annuler) :`);
-  if (newKey && newKey.trim()) {
-    setTeamKey(newKey.trim());
-    alert(`✅ Clef mise à jour : "${newKey.trim()}"`);
-  }
+  window.open('https://supabase.com/dashboard/project/hfaiuxkjzjcrnsejzger/editor', '_blank');
 });
 
-document.getElementById('logout-btn').addEventListener('click', () => {
-  clearSession();
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await sb.auth.signOut();
   document.getElementById('user-label').textContent = '';
   document.getElementById('user-avatar').textContent = '?';
   document.getElementById('login-gate').hidden = false;
