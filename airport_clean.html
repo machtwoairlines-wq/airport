@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Airport v7</title>
+<title>Airport v8</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
 <style>
 :root {
@@ -1727,7 +1727,7 @@ function renderWeekView() {
       el.addEventListener('click', e => {
         e.stopPropagation();
         if (ev._task) { openTaskDetail(ev._taskId); return; }
-        if (ev._static) return;
+        if (ev._static) { openStaticEvInfo(ev, el); return; }
         openModal(ev.id);
       });
 
@@ -1904,6 +1904,45 @@ document.addEventListener('mouseup', e => {
   creating = null;
   setTimeout(() => document.getElementById('ev-inp-title').focus(), 50);
 }, {capture: false});
+
+/* ─── STATIC EVENT INFO POPUP ─── */
+let _staticPopup = null;
+function openStaticEvInfo(ev, anchor) {
+  // Remove existing popup
+  if (_staticPopup) { _staticPopup.remove(); _staticPopup = null; }
+  const popup = document.createElement('div');
+  popup.style.cssText = `position:fixed;z-index:3000;background:var(--surface);border:1px solid var(--border);
+    border-radius:12px;padding:14px 16px;box-shadow:0 8px 30px rgba(0,0,0,.18);min-width:200px;max-width:260px;`;
+  const entLabel = { mt:'Mach Two', mtp:'Mach Two Publishing', lm:'La Madone / FJ' }[ev.ent] || ev.ent;
+  const tagHtml = ev.tag ? `<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;
+    background:var(--accent-light);color:var(--accent);letter-spacing:.04em;text-transform:uppercase">${ev.tag}</span>` : '';
+  popup.innerHTML = `
+    <div style="font-size:13.5px;font-weight:700;color:var(--fg);margin-bottom:4px">${ev.title}</div>
+    ${ev.sub ? `<div style="font-size:12px;color:var(--fg3);margin-bottom:8px">${ev.sub}</div>` : ''}
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:10px;font-weight:600;color:var(--fg3)">${entLabel}</span>
+      ${tagHtml}
+    </div>
+    <div style="font-size:11px;color:var(--fg3);margin-top:8px;font-style:italic">Événement fixe — non modifiable</div>`;
+
+  document.body.appendChild(popup);
+  _staticPopup = popup;
+
+  // Position near anchor
+  const rect = anchor.getBoundingClientRect();
+  const pw = popup.offsetWidth || 220;
+  let left = rect.right + 8;
+  if (left + pw > window.innerWidth - 12) left = rect.left - pw - 8;
+  popup.style.left = Math.max(8, left) + 'px';
+  popup.style.top = Math.min(rect.top, window.innerHeight - 160) + 'px';
+
+  // Close on outside click
+  setTimeout(() => {
+    document.addEventListener('click', function close(e) {
+      if (!popup.contains(e.target)) { popup.remove(); _staticPopup = null; document.removeEventListener('click', close); }
+    });
+  }, 0);
+}
 
 /* ─── EVENT MODAL ─── */
 function openModal(evId) {
