@@ -598,9 +598,8 @@ textarea.td-inp { resize:vertical; min-height:70px; }
 .task-item.ent-mtp::before { background: var(--col-mtp); }
 .task-item.ent-lm::before { background: var(--col-lm); }
 .task-item:hover { background: var(--surface2); }
-.task-del-btn { display:none; background:none; border:none; color:var(--fg3); cursor:pointer; font-size:12px; padding:2px 6px; border-radius:4px; line-height:1; margin-left:4px; flex-shrink:0; }
-.task-del-btn:hover { background:var(--danger,#fee2e2); color:#dc2626; }
-.task-item:hover .task-del-btn { display:inline-flex; }
+.task-del-btn { display:inline-flex; background:none; border:none; color:var(--fg3); cursor:pointer; font-size:12px; padding:2px 6px; border-radius:4px; line-height:1; margin-left:auto; flex-shrink:0; opacity:0.4; }
+.task-del-btn:hover { background:var(--danger,#fee2e2); color:#dc2626; opacity:1; }
 .task-item.done {
   opacity: .55;
 }
@@ -987,7 +986,7 @@ function addEv(dateStr, ev) {
 // Single dates
 addEv('2026-10-08', { title:'Aujourd\'hui — J-11', sub:'Dashboard activé', ent:'mt', tag:'Aujourd\'hui' });
 addEv('2026-10-16', { title:'Teaser TikTok J-3', sub:'Extrait 15s + visuel FMTTM', ent:'mt', tag:'Contenu' });
-addEv('2026-10-19', { title:'Fly Me to the Moon', sub:'Sortie single officielle', ent:'mt', tag:'Sortie' });
+
 addEv('2026-12-12', { title:'Remember', sub:'Single suivant — sortie prévue', ent:'mt', tag:'Sortie' });
 addEv('2027-02-01', { title:'Run', sub:'Single Q1 2027', ent:'mt', tag:'Sortie' });
 addEv('2026-09-12', { title:'Crash Test', sub:'Premier single — sorti', ent:'mt', tag:'Sorti' });
