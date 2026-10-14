@@ -1298,64 +1298,62 @@ function buildSections() {
 }
 
 function bindEvents() {
-  document.querySelectorAll('.task-cb').forEach(cb => {
-    cb.addEventListener('change', async function(e) {
+  const sc = document.getElementById('sections-container');
+  if (!sc) return;
+
+  // All task-level interactions via event delegation (survives every re-render)
+  if (!sc._bound) {
+    sc._bound = true;
+
+    sc.addEventListener('change', async function(e) {
+      const cb = e.target.closest('.task-cb');
+      if (!cb) return;
       e.stopPropagation();
-      const tid = this.dataset.tid;
+      const tid = cb.dataset.tid;
       if (!sbTasks[tid]) return;
-      sbTasks[tid].checked = this.checked;
-      state.checked[tid] = this.checked;
+      sbTasks[tid].checked = cb.checked;
+      state.checked[tid] = cb.checked;
       saveState(state);
       await upsertTask(sbTasks[tid]);
       buildSections(); updateAll();
     });
-  });
-  // Double-click on task text → open detail modal
-  document.querySelectorAll('.task-item').forEach(item => {
-    item.addEventListener('dblclick', function(e) {
-      if (e.target.matches('.task-cb,.task-del-btn')) return;
-      openTaskDetail(this.dataset.tid);
-    });
-  });
-  document.querySelectorAll('.tsect-head').forEach(h => {
-    h.addEventListener('click', function(e) {
-      if (e.target.matches('.add-input,.add-btn,.add-ent-sel')) return;
-      this.closest('.tsect').classList.toggle('collapsed');
-    });
-  });
-  document.querySelectorAll('.add-btn').forEach(btn => {
-    btn.addEventListener('click', async function() {
-      const sid = this.dataset.sid;
-      const input = document.querySelector(`.add-input[data-sid="${sid}"]`);
-      const ent = document.querySelector(`.add-ent-sel[data-sid="${sid}"]`).value;
-      const text = input.value.trim();
-      if (!text) return;
-      const newTask = { id:'cx_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
-        section_id:sid, text, ent, urgent:false, checked:false,
-        date:null, notes:'', contacts:[], reminder_at:null, is_static:false };
-      sbTasks[newTask.id] = newTask;
-      input.value = '';
-      await upsertTask(newTask);
-      buildSections();
-    });
-  });
-  document.querySelectorAll('.add-input').forEach(inp => {
-    inp.addEventListener('click', e => e.stopPropagation());
-    inp.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') document.querySelector(`.add-btn[data-sid="${this.dataset.sid}"]`).click();
-    });
-  });
-  document.querySelectorAll('.add-ent-sel').forEach(s => s.addEventListener('click', e => e.stopPropagation()));
 
-  // Delete button — event delegation on container (survives re-renders)
-  const sc = document.getElementById('sections-container');
-  if (sc && !sc._delBound) {
-    sc._delBound = true;
     sc.addEventListener('click', function(e) {
-      const btn = e.target.closest('.task-del-btn');
-      if (!btn) return;
-      e.stopPropagation();
-      deleteTask(btn.dataset.tid);
+      // Delete button
+      const del = e.target.closest('.task-del-btn');
+      if (del) { e.stopPropagation(); deleteTask(del.dataset.tid); return; }
+      // Ignore add-row controls
+      if (e.target.closest('.add-row')) return;
+      // Section header toggle
+      const head = e.target.closest('.tsect-head');
+      if (head) { head.closest('.tsect').classList.toggle('collapsed'); return; }
+      // Task item → open detail
+      const item = e.target.closest('.task-item');
+      if (item && !e.target.closest('.task-cb')) { openTaskDetail(item.dataset.tid); return; }
+      // Add button
+      const addBtn = e.target.closest('.add-btn');
+      if (addBtn) {
+        const sid = addBtn.dataset.sid;
+        const input = sc.querySelector(`.add-input[data-sid="${sid}"]`);
+        const ent   = sc.querySelector(`.add-ent-sel[data-sid="${sid}"]`).value;
+        const text  = input.value.trim();
+        if (!text) return;
+        const newTask = { id:'cx_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+          section_id:sid, text, ent, urgent:false, checked:false,
+          date:null, notes:'', contacts:[], reminder_at:null, is_static:false };
+        sbTasks[newTask.id] = newTask;
+        input.value = '';
+        upsertTask(newTask).then(() => buildSections());
+      }
+    });
+
+    sc.addEventListener('keydown', function(e) {
+      const inp = e.target.closest('.add-input');
+      if (!inp) return;
+      if (e.key === 'Enter') {
+        const addBtn = sc.querySelector(`.add-btn[data-sid="${inp.dataset.sid}"]`);
+        if (addBtn) addBtn.click();
+      }
     });
   }
 }
