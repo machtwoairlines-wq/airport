@@ -1320,8 +1320,8 @@ function bindEvents() {
 
     sc.addEventListener('click', function(e) {
       // Delete button
-      const del = e.target.closest('.task-del-btn');
-      if (del) { e.stopPropagation(); deleteTask(del.dataset.tid); return; }
+      const delBtn = e.target.closest('.task-del-btn');
+      if (delBtn) { e.stopPropagation(); deleteTask(delBtn.dataset.tid); return; }
       // Ignore add-row controls
       if (e.target.closest('.add-row')) return;
       // Section header toggle
