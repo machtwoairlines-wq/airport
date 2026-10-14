@@ -1979,7 +1979,7 @@ document.addEventListener('mouseup', e => {
 function openModal(evId) {
   const ev = userEvs[evId];
   if (!ev) return;
-  document.getElementById('ev-modal-title').textContent = 'Modifier l'événement';
+  document.getElementById('ev-modal-title').textContent = "Modifier l'evénement";
   document.getElementById('ev-inp-title').value = ev.title;
   document.getElementById('ev-inp-date').value = ev.date;
   document.getElementById('ev-inp-start').value = fmtTimeInput(ev.startMin);
