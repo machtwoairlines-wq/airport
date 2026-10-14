@@ -1175,7 +1175,7 @@ async function handleLogin() {
     console.log('[AUTH] validated =', validated);
     if (!validated) {
       await sb.auth.signOut();
-      setErr("Ton compte est en attente de validation par l’admin. On te prévient dès que c’est bon 👍");
+      setErr("Ton compte est en attente de validation par l'admin. On te prévient dès que c'est bon 👍");
       return;
     }
     showUser(email);
@@ -1649,15 +1649,15 @@ const TOTAL_HOURS = DAY_END - DAY_START;
 const SNAP_MIN = 15;
 
 const ENT_COLORS = {
-  mt:  { bg:’#ede9fe’, border:’#7c3aed’, text:’#5b21b6’ },
-  mtp: { bg:’#e0f2fe’, border:’#0284c7’, text:’#075985’ },
-  lm:  { bg:’#fef9c3’, border:’#ca8a04’, text:’#854d0e’ },
-  default: { bg:’#f1f5f9’, border:’#64748b’, text:’#334155’ }
+  mt:  { bg:'#ede9fe', border:'#7c3aed', text:'#5b21b6' },
+  mtp: { bg:'#e0f2fe', border:'#0284c7', text:'#075985' },
+  lm:  { bg:'#fef9c3', border:'#ca8a04', text:'#854d0e' },
+  default: { bg:'#f1f5f9', border:'#64748b', text:'#334155' }
 };
 
-// User events in localStorage: { ‘uuid’: {id,title,date,startMin,durationMin,ent} }
-function loadUserEvs() { try { return JSON.parse(localStorage.getItem(‘machtwo_wk_evs’) || ‘{}’); } catch(e) { return {}; } }
-function saveUserEvs() { try { localStorage.setItem(‘machtwo_wk_evs’, JSON.stringify(userEvs)); } catch(e) {} }
+// User events in localStorage: { ‘uuid': {id,title,date,startMin,durationMin,ent} }
+function loadUserEvs() { try { return JSON.parse(localStorage.getItem(‘machtwo_wk_evs') || ‘{}'); } catch(e) { return {}; } }
+function saveUserEvs() { try { localStorage.setItem(‘machtwo_wk_evs', JSON.stringify(userEvs)); } catch(e) {} }
 let userEvs = loadUserEvs();
 
 function genId() { return Math.random().toString(36).slice(2,10); }
@@ -1681,24 +1681,24 @@ function yToMin(y) {
 }
 function fmtMin(min) {
   const h = Math.floor(min/60), m = min%60;
-  return `${h}:${m.toString().padStart(2,’0’)}`;
+  return `${h}:${m.toString().padStart(2,'0')}`;
 }
 function fmtTimeInput(min) {
   const h = Math.floor(min/60), m = min%60;
-  return `${h.toString().padStart(2,’0’)}:${m.toString().padStart(2,’0’)}`;
+  return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
 }
 function parseTimeInput(s) {
-  const [h,m] = s.split(‘:’).map(Number);
+  const [h,m] = s.split(‘:').map(Number);
   return h*60+(m||0);
 }
 
 // Merge CAL_EVENTS (static) + userEvs + tasks with date for a given date key
 function getEventsForDate(dk) {
   const staticEvs = (CAL_EVENTS[dk] || []).map(ev => ({
-    id: ‘static_’ + dk + ‘_’ + ev.title,
+    id: ‘static_' + dk + ‘_' + ev.title,
     title: ev.title,
-    sub: ev.sub || ‘’,
-    ent: ev.ent || ‘mt’,
+    sub: ev.sub || ‘',
+    ent: ev.ent || ‘mt',
     startMin: ev.startMin != null ? ev.startMin : 600,
     durationMin: ev.durationMin != null ? ev.durationMin : 60,
     _static: true
@@ -1708,10 +1708,10 @@ function getEventsForDate(dk) {
   const taskEvs = Object.values(sbTasks)
     .filter(t => t.date === dk && !t.checked)
     .map(t => ({
-      id: ‘task_’ + t.id,
+      id: ‘task_' + t.id,
       title: ‘☑ ‘ + t.text,
-      sub: t.notes ? t.notes.slice(0,40) : ‘’,
-      ent: t.ent || ‘mt’,
+      sub: t.notes ? t.notes.slice(0,40) : ‘',
+      ent: t.ent || ‘mt',
       startMin: 480, // 8h00 by default
       durationMin: 30,
       _task: true, _taskId: t.id
@@ -1731,29 +1731,29 @@ function renderWeekView() {
   const label = sameMonth
     ? `${s.getDate()}–${e.getDate()} ${MONTHS_FR[s.getMonth()]} ${s.getFullYear()}`
     : `${s.getDate()} ${MONTHS_FR[s.getMonth()]} – ${e.getDate()} ${MONTHS_FR[e.getMonth()]} ${e.getFullYear()}`;
-  document.getElementById(‘week-nav-label’).textContent = label;
+  document.getElementById(‘week-nav-label').textContent = label;
 
   // Header row
-  const head = document.getElementById(‘week-head-row’);
-  head.innerHTML = ‘<div class="week-head-gutter"></div>’ + days.map((d,i) => {
+  const head = document.getElementById(‘week-head-row');
+  head.innerHTML = ‘<div class="week-head-gutter"></div>' + days.map((d,i) => {
     const isToday = d.getTime() === today.getTime();
-    const dow = [‘Lun’,’Mar’,’Mer’,’Jeu’,’Ven’,’Sam’,’Dim’][i];
-    return `<div class="week-head-day${isToday?’ today’:’’}" data-col="${i}">
+    const dow = [‘Lun','Mar','Mer','Jeu','Ven','Sam','Dim'][i];
+    return `<div class="week-head-day${isToday?' today':''}" data-col="${i}">
       <span class="wh-num">${d.getDate()}</span>${dow}
     </div>`;
-  }).join(‘’);
+  }).join(‘');
 
   // Grid
-  const grid = document.getElementById(‘week-grid’);
-  grid.innerHTML = ‘’;
-  grid.style.height = (TOTAL_HOURS * HOUR_PX) + ‘px’;
+  const grid = document.getElementById(‘week-grid');
+  grid.innerHTML = ‘';
+  grid.style.height = (TOTAL_HOURS * HOUR_PX) + ‘px';
 
   // Time gutter
-  const gutter = document.createElement(‘div’);
-  gutter.className = ‘week-gutter’;
+  const gutter = document.createElement(‘div');
+  gutter.className = ‘week-gutter';
   for (let h = DAY_START; h < DAY_END; h++) {
-    const lbl = document.createElement(‘div’);
-    lbl.className = ‘week-hour-label’;
+    const lbl = document.createElement(‘div');
+    lbl.className = ‘week-hour-label';
     lbl.textContent = `${h}:00`;
     gutter.appendChild(lbl);
   }
@@ -1761,14 +1761,14 @@ function renderWeekView() {
 
   // Day columns
   days.forEach((d, colIdx) => {
-    const col = document.createElement(‘div’);
-    col.className = ‘week-col’ + (d.getTime() === today.getTime() ? ‘ today-col’ : ‘’);
-    col.style.position = ‘relative’;
+    const col = document.createElement(‘div');
+    col.className = ‘week-col' + (d.getTime() === today.getTime() ? ‘ today-col' : ‘');
+    col.style.position = ‘relative';
 
     // Hour slots (click-to-create zones)
     for (let h = DAY_START; h < DAY_END; h++) {
-      const slot = document.createElement(‘div’);
-      slot.className = ‘week-slot’;
+      const slot = document.createElement(‘div');
+      slot.className = ‘week-slot';
       slot.dataset.col = colIdx;
       slot.dataset.hour = h;
       col.appendChild(slot);
@@ -1784,8 +1784,8 @@ function renderWeekView() {
       const height = Math.max(((endMin - startMin) / 60) * HOUR_PX, 20);
       const colors = ENT_COLORS[ev.ent] || ENT_COLORS.default;
 
-      const el = document.createElement(‘div’);
-      el.className = ‘week-ev’;
+      const el = document.createElement(‘div');
+      el.className = ‘week-ev';
       el.dataset.evid = ev.id;
       el.dataset.date = dk;
       el.style.cssText = `top:${top}px;height:${height}px;background:${colors.bg};border-left-color:${colors.border};color:${colors.text}`;
@@ -1794,7 +1794,7 @@ function renderWeekView() {
         <div class="week-ev-resize"></div>`;
 
       // Click to edit
-      el.addEventListener(‘click’, e => {
+      el.addEventListener(‘click', e => {
         e.stopPropagation();
         if (ev._task) { openTaskDetail(ev._taskId); return; }
         if (ev._static) return;
@@ -1803,29 +1803,29 @@ function renderWeekView() {
 
       // No drag on task events or static
       if (ev._task || ev._static) {
-        el.querySelector(‘.week-ev-resize’).style.display = ‘none’;
+        el.querySelector(‘.week-ev-resize').style.display = ‘none';
         return col.appendChild(el), undefined;
       }
 
       // Drag to move
-      el.addEventListener(‘mousedown’, e => {
-        if (e.target.classList.contains(‘week-ev-resize’)) return;
+      el.addEventListener(‘mousedown', e => {
+        if (e.target.classList.contains(‘week-ev-resize')) return;
         e.preventDefault();
-        startDrag(e, ev, d, colIdx, ‘move’);
+        startDrag(e, ev, d, colIdx, ‘move');
       });
 
       // Resize
-      el.querySelector(‘.week-ev-resize’).addEventListener(‘mousedown’, e => {
+      el.querySelector(‘.week-ev-resize').addEventListener(‘mousedown', e => {
         e.preventDefault(); e.stopPropagation();
-        startDrag(e, ev, d, colIdx, ‘resize’);
+        startDrag(e, ev, d, colIdx, ‘resize');
       });
 
       col.appendChild(el);
     });
 
     // Click on slot to create new event
-    col.addEventListener(‘mousedown’, e => {
-      if (e.target.classList.contains(‘week-ev’) || e.target.closest(‘.week-ev’)) return;
+    col.addEventListener(‘mousedown', e => {
+      if (e.target.classList.contains(‘week-ev') || e.target.closest(‘.week-ev')) return;
       startCreate(e, d, col);
     });
 
@@ -1838,22 +1838,22 @@ function renderWeekView() {
   if (nowMin >= DAY_START*60 && nowMin < DAY_END*60) {
     const todayIdx = days.findIndex(d => d.getTime() === today.getTime());
     if (todayIdx >= 0) {
-      const todayCol = grid.querySelectorAll(‘.week-col’)[todayIdx];
+      const todayCol = grid.querySelectorAll(‘.week-col')[todayIdx];
       if (todayCol) {
-        const line = document.createElement(‘div’);
-        line.className = ‘week-now-line’;
-        line.style.top = minToY(nowMin) + ‘px’;
-        line.innerHTML = ‘<div class="week-now-dot"></div>’;
+        const line = document.createElement(‘div');
+        line.className = ‘week-now-line';
+        line.style.top = minToY(nowMin) + ‘px';
+        line.innerHTML = ‘<div class="week-now-dot"></div>';
         todayCol.appendChild(line);
       }
     }
   }
 
   // Scroll to ~8:00 on first render
-  const scrollEl = document.getElementById(‘week-scroll’);
-  if (scrollEl && scrollEl.dataset.initialized !== ‘1’) {
+  const scrollEl = document.getElementById(‘week-scroll');
+  if (scrollEl && scrollEl.dataset.initialized !== ‘1') {
     scrollEl.scrollTop = minToY(8*60);
-    scrollEl.dataset.initialized = ‘1’;
+    scrollEl.dataset.initialized = ‘1';
   }
 }
 
@@ -1862,8 +1862,8 @@ let drag = null;
 
 function startDrag(e, ev, date, colIdx, type) {
   if (ev._static) return;
-  const colEls = document.getElementById(‘week-grid’).querySelectorAll(‘.week-col’);
-  const evEl = document.getElementById(‘week-grid’).querySelector(`[data-evid="${ev.id}"]`);
+  const colEls = document.getElementById(‘week-grid').querySelectorAll(‘.week-col');
+  const evEl = document.getElementById(‘week-grid').querySelector(`[data-evid="${ev.id}"]`);
   if (!evEl) return;
   const colRect = colEls[colIdx].getBoundingClientRect();
   drag = {
@@ -1872,10 +1872,10 @@ function startDrag(e, ev, date, colIdx, type) {
     offsetY: e.clientY - evEl.getBoundingClientRect().top,
     origEl: evEl
   };
-  evEl.classList.add(‘dragging’);
+  evEl.classList.add(‘dragging');
 }
 
-document.addEventListener(‘mousemove’, e => {
+document.addEventListener(‘mousemove', e => {
   if (!drag) return;
   const colEls = drag.colEls;
   // Find which column mouse is over
@@ -1885,16 +1885,16 @@ document.addEventListener(‘mousemove’, e => {
     if (e.clientX >= r.left && e.clientX <= r.right) { newColIdx = i; break; }
   }
   const colRect = colEls[newColIdx].getBoundingClientRect();
-  const scrollEl = document.getElementById(‘week-scroll’);
+  const scrollEl = document.getElementById(‘week-scroll');
   const scrollTop = scrollEl.scrollTop;
 
-  if (drag.type === ‘move’) {
+  if (drag.type === ‘move') {
     const relY = e.clientY - colRect.top + scrollTop - drag.offsetY;
     const snapped = Math.max(DAY_START*60, Math.min(yToMin(relY), (DAY_END-1)*60));
     drag.newStartMin = snapped;
     drag.newColIdx = newColIdx;
     // Visual feedback
-    drag.origEl.style.top = minToY(snapped) + ‘px’;
+    drag.origEl.style.top = minToY(snapped) + ‘px';
     // Move to new column visually if needed
     if (newColIdx !== drag.colIdx) {
       colEls[newColIdx].appendChild(drag.origEl);
@@ -1907,22 +1907,22 @@ document.addEventListener(‘mousemove’, e => {
     const endSnapped = Math.max(yToMin(relY), drag.ev.startMin + SNAP_MIN);
     const dur = Math.min(endSnapped - drag.ev.startMin, (DAY_END - drag.ev.startMin/60)*60);
     drag.newDuration = dur;
-    drag.origEl.style.height = Math.max((dur/60)*HOUR_PX, 20) + ‘px’;
-    drag.origEl.querySelector(‘.week-ev-time’).textContent =
+    drag.origEl.style.height = Math.max((dur/60)*HOUR_PX, 20) + ‘px';
+    drag.origEl.querySelector(‘.week-ev-time').textContent =
       `${fmtMin(drag.ev.startMin)}–${fmtMin(drag.ev.startMin+dur)}`;
   }
 });
 
-document.addEventListener(‘mouseup’, () => {
+document.addEventListener(‘mouseup', () => {
   if (!drag) return;
-  drag.origEl.classList.remove(‘dragging’);
-  if (drag.type === ‘move’ && drag.newStartMin != null) {
+  drag.origEl.classList.remove(‘dragging');
+  if (drag.type === ‘move' && drag.newStartMin != null) {
     const days = Array.from({length:7}, (_, i) => { const d = new Date(weekStart); d.setDate(d.getDate()+i); return d; });
     const newDate = dateKey(days[drag.colIdx]);
     userEvs[drag.ev.id].date = newDate;
     userEvs[drag.ev.id].startMin = drag.newStartMin;
     saveUserEvs();
-  } else if (drag.type === ‘resize’ && drag.newDuration != null) {
+  } else if (drag.type === ‘resize' && drag.newDuration != null) {
     userEvs[drag.ev.id].durationMin = drag.newDuration;
     saveUserEvs();
   }
@@ -1935,120 +1935,120 @@ document.addEventListener(‘mouseup’, () => {
 let creating = null;
 
 function startCreate(e, date, colEl) {
-  const scrollEl = document.getElementById(‘week-scroll’);
+  const scrollEl = document.getElementById(‘week-scroll');
   const rect = colEl.getBoundingClientRect();
   const relY = e.clientY - rect.top + scrollEl.scrollTop;
   const startMin = Math.max(yToMin(relY), DAY_START*60);
-  const ghost = document.createElement(‘div’);
-  ghost.className = ‘week-ghost’;
-  ghost.style.top = minToY(startMin) + ‘px’;
-  ghost.style.height = HOUR_PX + ‘px’;
+  const ghost = document.createElement(‘div');
+  ghost.className = ‘week-ghost';
+  ghost.style.top = minToY(startMin) + ‘px';
+  ghost.style.height = HOUR_PX + ‘px';
   colEl.appendChild(ghost);
   creating = { date, colEl, ghost, startMin, startY: e.clientY };
 }
 
-document.addEventListener(‘mousemove’, e => {
+document.addEventListener(‘mousemove', e => {
   if (!creating) return;
-  const scrollEl = document.getElementById(‘week-scroll’);
+  const scrollEl = document.getElementById(‘week-scroll');
   const rect = creating.colEl.getBoundingClientRect();
   const relY = e.clientY - rect.top + scrollEl.scrollTop;
   const endMin = Math.max(yToMin(relY), creating.startMin + SNAP_MIN);
   creating.endMin = endMin;
-  creating.ghost.style.height = Math.max(((endMin - creating.startMin)/60)*HOUR_PX, 20) + ‘px’;
+  creating.ghost.style.height = Math.max(((endMin - creating.startMin)/60)*HOUR_PX, 20) + ‘px';
 }, {capture: false});
 
-document.addEventListener(‘mouseup’, e => {
+document.addEventListener(‘mouseup', e => {
   if (!creating) return;
   const endMin = creating.endMin || creating.startMin + 60;
   creating.ghost.remove();
   // Open modal pre-filled
-  document.getElementById(‘ev-modal-title’).textContent = ‘Nouvel événement’;
-  document.getElementById(‘ev-inp-title’).value = ‘’;
-  document.getElementById(‘ev-inp-date’).value = dateKey(creating.date);
-  document.getElementById(‘ev-inp-start’).value = fmtTimeInput(creating.startMin);
-  document.getElementById(‘ev-inp-end’).value = fmtTimeInput(endMin);
-  document.getElementById(‘ev-inp-ent’).value = ‘mt’;
-  document.getElementById(‘ev-modal-del’).hidden = true;
-  document.getElementById(‘ev-modal-overlay’).dataset.editId = ‘’;
-  document.getElementById(‘ev-modal-overlay’).hidden = false;
+  document.getElementById(‘ev-modal-title').textContent = ‘Nouvel événement';
+  document.getElementById(‘ev-inp-title').value = ‘';
+  document.getElementById(‘ev-inp-date').value = dateKey(creating.date);
+  document.getElementById(‘ev-inp-start').value = fmtTimeInput(creating.startMin);
+  document.getElementById(‘ev-inp-end').value = fmtTimeInput(endMin);
+  document.getElementById(‘ev-inp-ent').value = ‘mt';
+  document.getElementById(‘ev-modal-del').hidden = true;
+  document.getElementById(‘ev-modal-overlay').dataset.editId = ‘';
+  document.getElementById(‘ev-modal-overlay').hidden = false;
   creating = null;
-  setTimeout(() => document.getElementById(‘ev-inp-title’).focus(), 50);
+  setTimeout(() => document.getElementById(‘ev-inp-title').focus(), 50);
 }, {capture: false});
 
 /* ─── EVENT MODAL ─── */
 function openModal(evId) {
   const ev = userEvs[evId];
   if (!ev) return;
-  document.getElementById(‘ev-modal-title’).textContent = ‘Modifier l’événement’;
-  document.getElementById(‘ev-inp-title’).value = ev.title;
-  document.getElementById(‘ev-inp-date’).value = ev.date;
-  document.getElementById(‘ev-inp-start’).value = fmtTimeInput(ev.startMin);
-  document.getElementById(‘ev-inp-end’).value = fmtTimeInput(ev.startMin + ev.durationMin);
-  document.getElementById(‘ev-inp-ent’).value = ev.ent;
-  document.getElementById(‘ev-modal-del’).hidden = false;
-  document.getElementById(‘ev-modal-overlay’).dataset.editId = evId;
-  document.getElementById(‘ev-modal-overlay’).hidden = false;
+  document.getElementById(‘ev-modal-title').textContent = ‘Modifier l'événement';
+  document.getElementById(‘ev-inp-title').value = ev.title;
+  document.getElementById(‘ev-inp-date').value = ev.date;
+  document.getElementById(‘ev-inp-start').value = fmtTimeInput(ev.startMin);
+  document.getElementById(‘ev-inp-end').value = fmtTimeInput(ev.startMin + ev.durationMin);
+  document.getElementById(‘ev-inp-ent').value = ev.ent;
+  document.getElementById(‘ev-modal-del').hidden = false;
+  document.getElementById(‘ev-modal-overlay').dataset.editId = evId;
+  document.getElementById(‘ev-modal-overlay').hidden = false;
 }
 
-document.getElementById(‘ev-modal-cancel’).addEventListener(‘click’, () => {
-  document.getElementById(‘ev-modal-overlay’).hidden = true;
+document.getElementById(‘ev-modal-cancel').addEventListener(‘click', () => {
+  document.getElementById(‘ev-modal-overlay').hidden = true;
 });
-document.getElementById(‘ev-modal-overlay’).addEventListener(‘click’, e => {
-  if (e.target === document.getElementById(‘ev-modal-overlay’))
-    document.getElementById(‘ev-modal-overlay’).hidden = true;
+document.getElementById(‘ev-modal-overlay').addEventListener(‘click', e => {
+  if (e.target === document.getElementById(‘ev-modal-overlay'))
+    document.getElementById(‘ev-modal-overlay').hidden = true;
 });
-document.getElementById(‘ev-modal-save’).addEventListener(‘click’, () => {
-  const title = document.getElementById(‘ev-inp-title’).value.trim();
-  if (!title) { document.getElementById(‘ev-inp-title’).focus(); return; }
-  const date  = document.getElementById(‘ev-inp-date’).value;
-  const start = parseTimeInput(document.getElementById(‘ev-inp-start’).value);
-  const end   = parseTimeInput(document.getElementById(‘ev-inp-end’).value);
-  const ent   = document.getElementById(‘ev-inp-ent’).value;
+document.getElementById(‘ev-modal-save').addEventListener(‘click', () => {
+  const title = document.getElementById(‘ev-inp-title').value.trim();
+  if (!title) { document.getElementById(‘ev-inp-title').focus(); return; }
+  const date  = document.getElementById(‘ev-inp-date').value;
+  const start = parseTimeInput(document.getElementById(‘ev-inp-start').value);
+  const end   = parseTimeInput(document.getElementById(‘ev-inp-end').value);
+  const ent   = document.getElementById(‘ev-inp-ent').value;
   const dur   = Math.max(end - start, SNAP_MIN);
-  const editId = document.getElementById(‘ev-modal-overlay’).dataset.editId;
+  const editId = document.getElementById(‘ev-modal-overlay').dataset.editId;
   const id = editId || genId();
   userEvs[id] = { id, title, date, startMin: start, durationMin: dur, ent };
   saveUserEvs();
-  document.getElementById(‘ev-modal-overlay’).hidden = true;
+  document.getElementById(‘ev-modal-overlay').hidden = true;
   renderWeekView(); renderCal();
 });
-document.getElementById(‘ev-modal-del’).addEventListener(‘click’, () => {
-  const editId = document.getElementById(‘ev-modal-overlay’).dataset.editId;
+document.getElementById(‘ev-modal-del').addEventListener(‘click', () => {
+  const editId = document.getElementById(‘ev-modal-overlay').dataset.editId;
   if (editId && userEvs[editId]) {
     delete userEvs[editId];
     saveUserEvs();
   }
-  document.getElementById(‘ev-modal-overlay’).hidden = true;
+  document.getElementById(‘ev-modal-overlay').hidden = true;
   renderWeekView(); renderCal();
 });
-document.getElementById(‘week-add-btn’).addEventListener(‘click’, () => {
+document.getElementById(‘week-add-btn').addEventListener(‘click', () => {
   const today = new Date();
-  document.getElementById(‘ev-modal-title’).textContent = ‘Nouvel événement’;
-  document.getElementById(‘ev-inp-title’).value = ‘’;
-  document.getElementById(‘ev-inp-date’).value = dateKey(today);
-  document.getElementById(‘ev-inp-start’).value = ‘10:00’;
-  document.getElementById(‘ev-inp-end’).value = ‘11:00’;
-  document.getElementById(‘ev-inp-ent’).value = ‘mt’;
-  document.getElementById(‘ev-modal-del’).hidden = true;
-  document.getElementById(‘ev-modal-overlay’).dataset.editId = ‘’;
-  document.getElementById(‘ev-modal-overlay’).hidden = false;
-  setTimeout(() => document.getElementById(‘ev-inp-title’).focus(), 50);
+  document.getElementById(‘ev-modal-title').textContent = ‘Nouvel événement';
+  document.getElementById(‘ev-inp-title').value = ‘';
+  document.getElementById(‘ev-inp-date').value = dateKey(today);
+  document.getElementById(‘ev-inp-start').value = ‘10:00';
+  document.getElementById(‘ev-inp-end').value = ‘11:00';
+  document.getElementById(‘ev-inp-ent').value = ‘mt';
+  document.getElementById(‘ev-modal-del').hidden = true;
+  document.getElementById(‘ev-modal-overlay').dataset.editId = ‘';
+  document.getElementById(‘ev-modal-overlay').hidden = false;
+  setTimeout(() => document.getElementById(‘ev-inp-title').focus(), 50);
 });
-document.getElementById(‘week-prev’).addEventListener(‘click’, () => {
+document.getElementById(‘week-prev').addEventListener(‘click', () => {
   weekStart.setDate(weekStart.getDate() - 7); renderWeekView();
 });
-document.getElementById(‘week-next’).addEventListener(‘click’, () => {
+document.getElementById(‘week-next').addEventListener(‘click', () => {
   weekStart.setDate(weekStart.getDate() + 7); renderWeekView();
 });
-document.getElementById(‘week-today-btn’).addEventListener(‘click’, () => {
+document.getElementById(‘week-today-btn').addEventListener(‘click', () => {
   weekStart = getWeekStart(new Date()); renderWeekView();
 });
 
-document.getElementById(‘cal-prev’).addEventListener(‘click’, () => {
+document.getElementById(‘cal-prev').addEventListener(‘click', () => {
   calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
   selectedDate = null; renderCal();
 });
-document.getElementById(‘cal-next’).addEventListener(‘click’, () => {
+document.getElementById(‘cal-next').addEventListener(‘click', () => {
   calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; }
   selectedDate = null; renderCal();
 });
