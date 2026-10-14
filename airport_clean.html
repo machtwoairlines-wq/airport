@@ -988,20 +988,9 @@ function addEv(dateStr, ev) {
 addEv('2026-10-08', { title:'Aujourd\'hui — J-11', sub:'Dashboard activé', ent:'mt', tag:'Aujourd\'hui' });
 addEv('2026-10-16', { title:'Teaser TikTok J-3', sub:'Extrait 15s + visuel FMTTM', ent:'mt', tag:'Contenu' });
 addEv('2026-10-19', { title:'Fly Me to the Moon', sub:'Sortie single officielle', ent:'mt', tag:'Sortie' });
-addEv('2026-10-19', { title:'Début série 30 jours', sub:'Session écoute J+1 · Insta + TikTok', ent:'mt', tag:'Série' });
-addEv('2026-11-17', { title:'Fin série 30 jours', sub:'Dernière session + recap J+30', ent:'mt', tag:'Série' });
 addEv('2026-12-12', { title:'Remember', sub:'Single suivant — sortie prévue', ent:'mt', tag:'Sortie' });
 addEv('2027-02-01', { title:'Run', sub:'Single Q1 2027', ent:'mt', tag:'Sortie' });
 addEv('2026-09-12', { title:'Crash Test', sub:'Premier single — sorti', ent:'mt', tag:'Sorti' });
-// Série 30 jours: mark every day Oct 19 → Nov 17
-(function(){
-  for (let d = new Date('2026-10-19'); d <= new Date('2026-11-17'); d.setDate(d.getDate()+1)) {
-    const k = d.toISOString().slice(0,10);
-    if (!CAL_EVENTS[k]) CAL_EVENTS[k] = [];
-    const existing = CAL_EVENTS[k].find(e => e.tag === 'Série');
-    if (!existing) addEv(k, { title:'Session écoute', sub:'Insta + TikTok 20-30s', ent:'mt', tag:'Série' });
-  }
-})();
 // SACEM urgents
 addEv('2026-10-15', { title:'Déclaration SACEM', sub:'Crash Test + FMTTM avant sortie', ent:'mtp', tag:'Admin' });
 
