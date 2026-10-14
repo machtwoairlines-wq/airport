@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Airport v8</title>
+<title>Airport v9</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
 <style>
 :root {
@@ -983,15 +983,7 @@ function addEv(dateStr, ev) {
   if (!CAL_EVENTS[dateStr]) CAL_EVENTS[dateStr] = [];
   CAL_EVENTS[dateStr].push(ev);
 }
-// Single dates
-addEv('2026-10-08', { title:'Aujourd\'hui — J-11', sub:'Dashboard activé', ent:'mt', tag:'Aujourd\'hui' });
-addEv('2026-10-16', { title:'Teaser TikTok J-3', sub:'Extrait 15s + visuel FMTTM', ent:'mt', tag:'Contenu' });
-
-addEv('2026-12-12', { title:'Remember', sub:'Single suivant — sortie prévue', ent:'mt', tag:'Sortie' });
-addEv('2027-02-01', { title:'Run', sub:'Single Q1 2027', ent:'mt', tag:'Sortie' });
-addEv('2026-09-12', { title:'Crash Test', sub:'Premier single — sorti', ent:'mt', tag:'Sorti' });
-// SACEM urgents
-addEv('2026-10-15', { title:'Déclaration SACEM', sub:'Crash Test + FMTTM avant sortie', ent:'mtp', tag:'Admin' });
+// Tous les événements sont créés par l'utilisateur via l'interface (clic-glisser dans la vue semaine)
 
 /* ─── STATE ─── */
 const STORAGE_KEY = 'machtwo_v5';
