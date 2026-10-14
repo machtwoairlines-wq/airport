@@ -533,6 +533,7 @@ body:has(#login:target) #register { display: none; }
 
 /* ─── TASK DETAIL MODAL ─── */
 .td-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:300; display:flex; align-items:flex-end; justify-content:center; }
+.td-overlay[hidden] { display:none!important; }
 .td-panel { background:var(--surface); border-radius:18px 18px 0 0; width:100%; max-width:560px; max-height:88vh; overflow-y:auto; padding:24px 20px 32px; display:flex; flex-direction:column; gap:14px; }
 .td-drag-handle { width:40px; height:4px; background:var(--border); border-radius:2px; margin:0 auto -4px; }
 .td-title-row { display:flex; gap:10px; align-items:center; }
