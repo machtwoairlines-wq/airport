@@ -899,7 +899,7 @@ textarea.td-inp { resize:vertical; min-height:70px; }
           <label>Catégorie</label>
           <select id="ev-inp-ent">
             <option value="mt">Mach Two</option>
-            <option value="mtp">Mach Two TakeOff</option>
+            <option value="mtp">Mach Two Publishing</option>
             <option value="lm">La Madone / FJ</option>
           </select>
           <div class="ev-modal-actions">
@@ -1252,7 +1252,7 @@ function taskHTML(t) {
     <input type="checkbox" class="task-cb" data-tid="${t.id}" ${t.checked?'checked':''}>
     <span class="task-text">${t.text}${metaDot}</span>
     ${dateBadge}${badge}${urgBadge}
-    <button class="task-del-btn" data-tid="${t.id}" title="Supprimer" onclick="event.stopPropagation();deleteTask(this.dataset.tid)">✕</button>
+    <button class="task-del-btn" data-tid="${t.id}" title="Supprimer">✕</button>
   </div>`;
 }
 
@@ -1346,6 +1346,18 @@ function bindEvents() {
     });
   });
   document.querySelectorAll('.add-ent-sel').forEach(s => s.addEventListener('click', e => e.stopPropagation()));
+
+  // Delete button — event delegation on container (survives re-renders)
+  const sc = document.getElementById('sections-container');
+  if (sc && !sc._delBound) {
+    sc._delBound = true;
+    sc.addEventListener('click', function(e) {
+      const btn = e.target.closest('.task-del-btn');
+      if (!btn) return;
+      e.stopPropagation();
+      deleteTask(btn.dataset.tid);
+    });
+  }
 }
 
 function updateAll() {
