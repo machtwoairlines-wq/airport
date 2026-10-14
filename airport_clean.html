@@ -598,6 +598,9 @@ textarea.td-inp { resize:vertical; min-height:70px; }
 .task-item.ent-mtp::before { background: var(--col-mtp); }
 .task-item.ent-lm::before { background: var(--col-lm); }
 .task-item:hover { background: var(--surface2); }
+.task-del-btn { display:none; background:none; border:none; color:var(--fg3); cursor:pointer; font-size:12px; padding:2px 6px; border-radius:4px; line-height:1; margin-left:4px; flex-shrink:0; }
+.task-del-btn:hover { background:var(--danger,#fee2e2); color:#dc2626; }
+.task-item:hover .task-del-btn { display:inline-flex; }
 .task-item.done {
   opacity: .55;
 }
@@ -963,103 +966,15 @@ textarea.td-inp { resize:vertical; min-height:70px; }
 <script>
 /* ─── DATA ─── */
 const SECTIONS = [
-  { id:'urgent', name:'Priorité immédiate', tasks:[
-    { id:'u1', text:'Replanifier RDV avec Thomas (Sony) — lui dire qu\'on a loupé un RDV', ent:'mt', urgent:true },
-    { id:'u2', text:'Recontacter Aurore', ent:'mt', urgent:true },
-    { id:'u3', text:'Préparer note vocale en anglais pour Aurore', ent:'mt', urgent:true },
-    { id:'u4', text:'RDV ce samedi matin avec Soledad', ent:'mtp', urgent:true },
-    { id:'u5', text:'Recadrer pochette FMTTM en 3000×3000px (Photoshop)', ent:'mt', urgent:true },
-    { id:'u6', text:'Valider mastering Fly Me to the Moon — deadline J-21 avant sortie', ent:'mt', urgent:true },
-    { id:'u7', text:'Uploader FMTTM sur DistroKid / iMusician', ent:'mt', urgent:true },
-    { id:'u8', text:'Pitcher FMTTM aux playlists Spotify (fenêtre J-7)', ent:'mt', urgent:true },
-  ]},
-  { id:'fmttm', name:'Fly Me to the Moon — Sortie 19 Oct', tasks:[
-    { id:'f1', text:'Finaliser mix FMTTM', ent:'mt' },
-    { id:'f2', text:'Mastering FMTTM — livraison WAV 24bit 44.1kHz', ent:'mt' },
-    { id:'f3', text:'Valider pochette 3000x3000px', ent:'mt' },
-    { id:'f4', text:'Renseigner métadonnées (titre exact, ISRC, BPM, genre)', ent:'mt' },
-    { id:'f5', text:'Rédiger post Instagram annonce FMTTM + visuels', ent:'mt' },
-    { id:'f6', text:'Refaire le lien Linktree pour ceux qui scanneront le QR code', ent:'mt' },
-    { id:'f7', text:'Faire des retours à Mat pour ajuster la colorimétrie', ent:'mt' },
-    { id:'f8', text:'Teaser TikTok J-3 (extrait 15s + visuel)', ent:'mt' },
-    { id:'f9', text:'Publication sur Publer (programmer les posts)', ent:'mt' },
-    { id:'f10', text:'Compiler checklist pre-sortie (discussion ChatGPT)', ent:'mt' },
-    { id:'f11', text:'Envoyer FMTTM à Apple Music Connect', ent:'mt' },
-    { id:'f12', text:'Faire le test qui passe bien en Spotify', ent:'mt' },
-    { id:'f13', text:'Freaky renvoie les photos en début de carrousel — les mettre dans le hublot', ent:'mt' },
-    { id:'f14', text:'Aurore — vocaux français', ent:'mt' },
-    { id:'f15', text:'Revoir un coup sur les pitch (GPT)', ent:'mt' },
-  ]},
-  { id:'serie30', name:'Série 30 jours — Sessions écoute (19 Oct — 17 Nov)', tasks:[
-    { id:'s1', text:'Définir le concept visuel des 30 vidéos (ambiance, format, cadre)', ent:'mt' },
-    { id:'s2', text:'Filmer un lot de 7-10 sessions écoute à l\'avance', ent:'mt' },
-    { id:'s3', text:'Monter le template vidéo (20-30s, sous-titres, logo)', ent:'mt' },
-    { id:'s4', text:'Programmer les 30 publications sur Publer (Insta + TikTok simultané)', ent:'mt' },
-    { id:'s5', text:'Varier les lieux et ambiances (studio, extérieur, voyage…)', ent:'mt' },
-    { id:'s6', text:'Suivre les stats chaque soir (vues, comptes complétés, partages)', ent:'mt' },
-    { id:'s7', text:'Ajuster le contenu selon les retours à partir de J+7', ent:'mt' },
-    { id:'s8', text:'Préparer la vidéo J+30 — recap de la série', ent:'mt' },
-  ]},
-  { id:'admin', name:'Admin & Publishing', tasks:[
-    { id:'a1', text:'Choix d\'un drive : Proton Drive pour MTP', ent:'mtp' },
-    { id:'a2', text:'Faire le virement à Soledad', ent:'mtp' },
-    { id:'a3', text:'Faire l\'écoute de prod pour sélectionner nos compos', ent:'mtp' },
-    { id:'a4', text:'Déclarer Crash Test à la SACEM', ent:'mtp', urgent:true },
-    { id:'a5', text:'Déclarer Fly Me to the Moon à la SACEM', ent:'mtp', urgent:true },
-    { id:'a6', text:'Déclarer Remember à la SACEM', ent:'mtp' },
-    { id:'a7', text:'RDV avec juriste — structure édition musicale', ent:'mtp' },
-    { id:'a8', text:'Clarifier statut SACEM compositeur + arrangeur', ent:'mtp' },
-    { id:'a9', text:'Ouvrir compte bancaire pro Mach Two', ent:'mtp' },
-    { id:'a10', text:'Définir contrat de collaboration interne (répartition revenus)', ent:'mtp' },
-    { id:'a11', text:'Vérifier droits voisins ADAMI / SPEDIDAM', ent:'mtp' },
-  ]},
-  { id:'distrib', name:'Distribution & Playlists', tasks:[
-    { id:'d1', text:'Créer compte DistroKid (ou valider iMusician)', ent:'mt' },
-    { id:'d2', text:'Uploader Crash Test sur la plateforme', ent:'mt' },
-    { id:'d3', text:'Activer Spotify for Artists', ent:'mt' },
-    { id:'d4', text:'Mettre à jour bio + photos bannière Spotify', ent:'mt' },
-    { id:'d5', text:'Pitcher FMTTM aux playlisters Groover (curators FR)', ent:'mt' },
-    { id:'d6', text:'Contacter finchbergling (Discovery playlist)', ent:'mt' },
-    { id:'d7', text:'Soumettre FMTTM à SubmitHub', ent:'mt' },
-    { id:'d8', text:'Uploader catalogue sur YouTube (audio officiel)', ent:'mt' },
-    { id:'d9', text:'Clarifier résultat discussions Sony — All on That Day', ent:'mt' },
-  ]},
-  { id:'comms', name:'Communication & Réseaux', tasks:[
-    { id:'c1', text:'Ouvrir compte TikTok Mach Two officiel', ent:'mt' },
-    { id:'c2', text:'Configurer profil TikTok (bio, lien, photo)', ent:'mt' },
-    { id:'c3', text:'Contacter Pierredelahouse (477k)', ent:'mt' },
-    { id:'c4', text:'Contacter baptdisques (63k)', ent:'mt' },
-    { id:'c5', text:'Contacter instamino (161k)', ent:'mt' },
-    { id:'c6', text:'Contacter ayybaybay_radio (555k US)', ent:'mt' },
-    { id:'c7', text:'Contacter fuegostine (470k US)', ent:'mt' },
-    { id:'c8', text:'Contacter crocopine (168k US)', ent:'mt' },
-    { id:'c9', text:'Envoyer FMTTM à Tsugi, Trax, Radio FG', ent:'mt' },
-    { id:'c10', text:'Rédiger communiqué de presse FMTTM (FR + EN)', ent:'mt' },
-    { id:'c11', text:'Créer newsletter Mach Two (Mailchimp ou Brevo)', ent:'mt' },
-    { id:'c12', text:'Créer EPK (Electronic Press Kit) — PDF ou lien web', ent:'mt' },
-  ]},
-  { id:'placements', name:'Placements La Madone / Freaky Joe', tasks:[
-    { id:'p1', text:'Trouver ingés son spécialisés rap FR pour placements', ent:'lm' },
-    { id:'p2', text:'Récupérer stems Crash Test pour remixes / sync', ent:'lm' },
-    { id:'p3', text:'Préparer dossier sync — pub ou film', ent:'lm' },
-    { id:'p4', text:'Identifier labels / superviseurs sync FR + EU', ent:'lm' },
-    { id:'p5', text:'Envoyer démos La Madone à labels rap FR', ent:'lm' },
-  ]},
-  { id:'presence', name:'Présence & Identité Plateformes', tasks:[
-    { id:'pr1', text:'Premier post carrousel — choisir les photos (logo / nous deux / photo de profil Spotify / bandeau)', ent:'mt' },
-    { id:'pr2', text:'Premier post carrousel — rédiger la description / légendes', ent:'mt' },
-    { id:'pr3', text:'Changer photo de profil sur Spotify', ent:'mt' },
-    { id:'pr4', text:'Changer photo de profil sur Apple Music', ent:'mt' },
-    { id:'pr5', text:'Changer photo de profil sur Deezer, Tidal et autres plateformes', ent:'mt' },
-    { id:'pr6', text:'Ajouter / mettre à jour la description artiste sur toutes les plateformes', ent:'mt' },
-  ]},
-  { id:'live', name:'Live & Développement', tasks:[
-    { id:'l1', text:'Définir le set live Mach Two (durée, tracklist)', ent:'mt' },
-    { id:'l2', text:'Tester les stems en live sur Ableton', ent:'mt' },
-    { id:'l3', text:'Identifier scènes et salles cibles 2027 (Paris + régions)', ent:'mt' },
-    { id:'l4', text:'Réfléchir à la scénographie (visuels projetés, concept spatial)', ent:'mt' },
-    { id:'l5', text:'Contacter des bookers après 3 singles sortis', ent:'mt' },
-  ]},
+  { id:'urgent',     name:'Priorité immédiate',                          tasks:[] },
+  { id:'fmttm',     name:'Fly Me to the Moon — Sortie 19 Oct',          tasks:[] },
+  { id:'serie30',   name:'Série 30 jours — Sessions écoute',            tasks:[] },
+  { id:'admin',     name:'Admin & Publishing',                           tasks:[] },
+  { id:'distrib',   name:'Distribution & Playlists',                    tasks:[] },
+  { id:'comms',     name:'Communication & Réseaux',                     tasks:[] },
+  { id:'placements',name:'Placements La Madone / Freaky Joe',           tasks:[] },
+  { id:'presence',  name:'Présence & Identité Plateformes',             tasks:[] },
+  { id:'live',      name:'Live & Développement',                        tasks:[] },
 ];
 
 /* ─── CALENDAR EVENTS ─── */
@@ -1349,6 +1264,7 @@ function taskHTML(t) {
     <input type="checkbox" class="task-cb" data-tid="${t.id}" ${t.checked?'checked':''}>
     <span class="task-text">${t.text}${metaDot}</span>
     ${dateBadge}${badge}${urgBadge}
+    <button class="task-del-btn" data-tid="${t.id}" title="Supprimer" onclick="event.stopPropagation();deleteTask(this.dataset.tid)">✕</button>
   </div>`;
 }
 
@@ -1558,6 +1474,21 @@ document.getElementById('td-del').addEventListener('click', async () => {
   if (!_tdTaskId) return;
   document.getElementById('td-overlay').hidden = true;
   await deleteTask(_tdTaskId);
+});
+
+// Touche Suppr / Delete dans le modal
+document.addEventListener('keydown', async e => {
+  if (document.getElementById('td-overlay').hidden) return;
+  const tag = document.activeElement?.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (e.key === 'Delete' || e.key === 'Backspace') {
+    if (!_tdTaskId) return;
+    document.getElementById('td-overlay').hidden = true;
+    await deleteTask(_tdTaskId);
+  }
+  if (e.key === 'Escape') {
+    document.getElementById('td-overlay').hidden = true;
+  }
 });
 
 /* ─── CALENDAR ─── */
