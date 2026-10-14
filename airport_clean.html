@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Airport v9</title>
+<title>Airport v10</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
 <style>
 :root {
@@ -1715,25 +1715,38 @@ function renderWeekView() {
         <div class="week-ev-time">${fmtMin(ev.startMin)}–${fmtMin(ev.startMin+ev.durationMin)}</div>
         <div class="week-ev-resize"></div>`;
 
-      // Click to edit
-      el.addEventListener('click', e => {
-        e.stopPropagation();
-        if (ev._task) { openTaskDetail(ev._taskId); return; }
-        if (ev._static) { openStaticEvInfo(ev, el); return; }
-        openModal(ev.id);
-      });
-
       // No drag on task events or static
       if (ev._task || ev._static) {
         el.querySelector('.week-ev-resize').style.display = 'none';
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          if (ev._task) { openTaskDetail(ev._taskId); return; }
+          openStaticEvInfo(ev, el);
+        });
         return col.appendChild(el), undefined;
       }
 
-      // Drag to move
+      // Drag to move — only start drag after 5px movement to allow simple clicks
       el.addEventListener('mousedown', e => {
         if (e.target.classList.contains('week-ev-resize')) return;
-        e.preventDefault();
-        startDrag(e, ev, d, colIdx, 'move');
+        const startX = e.clientX, startY = e.clientY;
+        let dragging = false;
+        const onMove = mv => {
+          if (!dragging && (Math.abs(mv.clientX - startX) > 5 || Math.abs(mv.clientY - startY) > 5)) {
+            dragging = true;
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+            startDrag(e, ev, d, colIdx, 'move');
+          }
+        };
+        const onUp = () => {
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+          if (!dragging) openModal(ev.id);
+        };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
       });
 
       // Resize
