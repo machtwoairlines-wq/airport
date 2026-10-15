@@ -2048,10 +2048,44 @@ try { initAuth(); } catch(e) {
   const el = document.getElementById('js-error-bar');
   if (el) { el.textContent = '⚠️ initAuth crash: ' + e.message; el.style.display = 'block'; }
 }
+/* ─── DEFAULT TASKS (one-shot, based on recent work) ─── */
+async function initDefaultTasks() {
+  const FLAG = 'machtwo_init_tasks_v1';
+  try { if (localStorage.getItem(FLAG)) return; } catch(e) {}
+
+  const defaults = [
+    // Urgents
+    { id:'init_sacem_decl',   section_id:'urgent', text:'Déclaration SACEM — Crash Test + FMTTM avant sortie', ent:'mtp', urgent:true,  date:'2026-10-15' },
+    { id:'init_sortie_19',    section_id:'urgent', text:'Sortie 19 oct — vérifier live sur DSP + DistroKid',   ent:'mt',  urgent:true,  date:'2026-10-19' },
+    // Admin & Publishing
+    { id:'init_mtp_fj_relu',  section_id:'admin',  text:'Freaky Joe : relire statuts V12 + pacte V7 et valider',    ent:'mtp', urgent:false, date:null },
+    { id:'init_mtp_avocat',   section_id:'admin',  text:'Trouver un avocat musique pour relecture statuts MTP',     ent:'mtp', urgent:false, date:null },
+    { id:'init_mtp_sign',     section_id:'admin',  text:'Signer statuts + pacte d\'associés MACH TWO PUBLISHING',   ent:'mtp', urgent:false, date:null },
+    { id:'init_ct007_fj',     section_id:'admin',  text:'HAYAWAN — Freaky Joe : signer le même Art. 7 (samples)',   ent:'lm',  urgent:false, date:null },
+    { id:'init_sacem_sample', section_id:'admin',  text:'SACEM : déclarer le sample retravaillé (HAYAWAN)',          ent:'lm',  urgent:false, date:null },
+    { id:'init_sacem_ipi',    section_id:'admin',  text:'SACEM : clarifier part éditeur sans IPI (Scylla/SABAM)',   ent:'lm',  urgent:false, date:null },
+    { id:'init_khabib_contrat',section_id:'admin', text:'KHABIB (FURAX) — préparer contrat beatmaker + BDO',        ent:'lm',  urgent:false, date:null },
+    { id:'init_supabase_rt',  section_id:'admin',  text:'Supabase : exécuter SQL real-time pour sync collègue',     ent:'mt',  urgent:false, date:null },
+  ];
+
+  for (const t of defaults) {
+    if (sbTasks[t.id]) continue; // already exists
+    const task = { ...t, checked:false, notes:'', contacts:[], reminder_at:null, is_static:false };
+    sbTasks[task.id] = task;
+    await upsertTask(task);
+  }
+
+  try { localStorage.setItem(FLAG, '1'); } catch(e) {}
+  buildSections(); renderWeekView();
+}
+
 // Init tasks: try Supabase, fall back gracefully
 initStaticTasks();
 buildSections();
-loadSbTasks().then(() => subscribeTasksRT()).catch(e => console.warn('[TASKS] init error', e));
+loadSbTasks().then(async () => {
+  await initDefaultTasks();
+  subscribeTasksRT();
+}).catch(e => console.warn('[TASKS] init error', e));
 renderCal();
 // Auto-select today if in current month
 const todayKey = new Date().toISOString().slice(0,10);
